@@ -1,0 +1,33 @@
+set -g default-terminal tmux-256color
+
+set -s escape-time 0
+
+set -g base-index 1
+
+
+
+# optional -- i like C-a not C-b (pure preference)
+
+unbind C-b
+
+set-option -g prefix C-a
+
+bind-key C-a send-prefix
+
+
+
+# vi key movement for copy/pasta mode
+
+set-window-option -g mode-keys vi
+
+bind -T copy-mode-vi v send-keys -X begin-selection
+
+bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel 'xclip -in -selection clipboard'
+
+
+
+# <WHERE YOUR TMUX CONF GOES> = XDG_CONFIG_HOME/tmux/tmux.conf
+
+# <WHERE YOUR TMUX CONF GOES> = ~/.tmux.conf
+
+bind r source-file <WHERE YOUR TMUX CONF GOES> \; display-message tmux.conf reloaded  /etc/tmux.conf
