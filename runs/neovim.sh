@@ -15,7 +15,7 @@ if [ ! -d $HOME/neovim ]; then
     git clone https://github.com/neovim/neovim.git $HOME/neovim
 fi
 
-sudo apt -y install cmake gettext lua5.1 liblua5.1-0-dev unzip
+sudo apt -y install cmake gettext lua5.1 liblua5.1-0-dev unzip wget 
 
 git -C ~/neovim fetch --all
 git -C ~/neovim checkout $version
@@ -35,7 +35,9 @@ git clone https://github.com/watninja68/karnee_neovim_config.git "${XDG_CONFIG_H
 #git clone https://github.com/ThePrimeagen/caleb.git $HOME/personal/caleb
 #git clone https://github.com/nvim-lua/plenary.nvim.git $HOME/personal/plenary
 
-wget https://luarocks.org/releases/luarocks-3.11.1.tar.gz
+wget --no-check-certificate https://luarocks.org/releases/luarocks-3.11.1.tar.gz
+
+#curl -O https://luarocks.org/releases/luarocks-3.11.1.tar.gz
 tar zxpf luarocks-3.11.1.tar.gz
 cd luarocks-3.11.1
 ./configure && make && sudo make install
