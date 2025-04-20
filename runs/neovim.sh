@@ -12,7 +12,7 @@ apt install git
 
 # neovim btw
 if [ ! -d $HOME/neovim ]; then
-    git clone https://github.com/neovim/neovim.git $HOME/neovim
+    git clone https://github.com/neovim/neovim.git $HOME/neovim --depth 3
 fi
 
 sudo apt -y install cmake gettext lua5.1 liblua5.1-0-dev unzip wget 
