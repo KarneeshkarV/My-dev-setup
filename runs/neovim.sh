@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 echo "neo";
-#!/usr/bin/env bash
 
 version="v0.10.2"
 if [ ! -z $NVIM_VERSION ]; then

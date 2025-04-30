@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/usr/bin/env zsh
 echo "running first"
 
 # Become root user (if not already)

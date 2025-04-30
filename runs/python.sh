@@ -1,5 +1,4 @@
-
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 sudo apt install curl
 sudo apt install software-properties-common -y
 sudo add-apt-repository ppa:deadsnakes/ppa
