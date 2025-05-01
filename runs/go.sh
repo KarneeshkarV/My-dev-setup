@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 sudo rm -rf /usr/local/go
-wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.24.2.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.24.2.linux-amd64.tar.gz
 LINE='export PATH=$PATH:/usr/local/go/bin'
 
 # File to modify
