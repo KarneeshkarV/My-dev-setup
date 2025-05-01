@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo "running"
+tmux neww -n mydev

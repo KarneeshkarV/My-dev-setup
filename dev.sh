@@ -1,27 +1,22 @@
 #!/usr/bin/env bash
 
 # Get the directory where the script is located
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 # Initialize variables
-dry="0" # Use "1" for true (dry run enabled), "0" for false (execute)
+dry="0" # Use "1" for dry run, "0" to execute
 
 # --- Argument Parsing ---
-# Loop through all command-line arguments
-while [[ $# -gt 0 ]]; do # Added spaces, use -gt for numerical comparison
-    # Check if the argument is exactly "--dry"
-    if [[ "$1" == "--dry" ]]; then # Added spaces, quotes, correct comparison
-        dry="1" # Set the dry run flag to true
-   fi
-    # Move to the next argument
+while [[ $# -gt 0 ]]; do
+    if [[ "$1" == "--dry" ]]; then
+        dry="1"
+    fi
     shift
 done
 
 # --- Logging Function ---
-# Prints messages, prepending [DRY_RUN] if dry run is enabled
 log() {
-    # Use the correct variable 'dry'
-    if [[ "$dry" == "1" ]]; then # Added spaces, quotes, correct comparison
+    if [[ "$dry" == "1" ]]; then
         echo "[DRY_RUN]: $1"
     else
         echo "$1"
@@ -29,64 +24,72 @@ log() {
 }
 
 # --- Execution Function ---
-# Executes commands passed as arguments, unless dry run is enabled
 execute() {
-    # Log the command that would be executed. Quote "$@" to handle args with spaces.
     log "Executing: \"$@\""
-
-    # Check the correct variable 'dry', add spaces, quotes, comparison
     if [[ "$dry" == "1" ]]; then
-        # If dry run, print the intent and return success without executing
         log "(Skipped execution due to dry run)"
-        return 0 # Indicate success for dry run scenarios
+        return 0
     fi
-
-    # If not dry run, execute the command with its arguments
     "$@"
-    # Capture and return the actual exit status of the command
     return $?
 }
-log "-----------------------------dev env -----------------------------" 
+
+log "----------------------------- dev env -----------------------------" 
 
 update_files() {
-    log "copying over files from: $1"
-    pushd $1 &> /dev/null
-    (
-        configs=`find . -mindepth 1 -maxdepth 1 -type d`
-        for c in $configs; do
-            directory=${2%/}/${c#./}
-            log "    removing: rm -rf $directory"
+    src_dir=$1
+    dest_dir=${2%/}
 
-            if [[ $dry_run == "0" ]]; then
-                rm -rf $directory
-            fi
+    log "Copying over files from: $src_dir"
+    pushd "$src_dir" > /dev/null || return 1
 
-            log "    copying env: cp $c $2"
-            if [[ $dry_run == "0" ]]; then
-                cp -r ./$c $2
-            fi
-        done
+    for c in */; do
+        directory="$dest_dir/${c%/}"
+        log "    removing: $directory"
+        if [[ "$dry" == "0" ]]; then
+            rm -rf "$directory"
+        fi
 
-    )
-    popd &> /dev/null
+        log "    copying: $c to $dest_dir"
+        if [[ "$dry" == "0" ]]; then
+            cp -r "$c" "$dest_dir"
+        fi
+    done
+
+    popd > /dev/null || return 1
 }
 
 copy() {
-    log "removing: $2"
-    if [[ $dry_run == "0" ]]; then
-        rm $2
+    src=$1
+    dest=$2
+    log "Removing: $dest"
+    if [[ "$dry" == "0" ]]; then
+        rm -rf "$dest"
     fi
-    log "copying: $1 to $2"
-    if [[ $dry_run == "0" ]]; then
-        cp $1 $2
+    log "Copying: $src to $dest"
+    if [[ "$dry" == "0" ]]; then
+        cp -r "$src" "$dest"
     fi
 }
-update_files $DEV_ENV/env/.config $XDG_CONFIG_HOME
-update_files $DEV_ENV/env/.local $HOME/.local
 
-copy $DEV_ENV/tmux-sessionizer/tmux-sessionizer $HOME/.local/scripts/tmux-sessionizer
-copy $DEV_ENV/env/.zsh_profile $HOME/.zsh_profile
-copy $DEV_ENV/env/.zshrc $HOME/.zshrc
-copy $DEV_ENV/env/.xprofile $HOME/.xprofile
-copy $DEV_ENV/env/.tmux-sessionizer $HOME/.tmux-sessionizer
-copy $DEV_ENV/dev-env $HOME/.local/scripts/dev-env
+copy_file() {
+    from=$1
+    to=$2
+    name=$(basename "$from")
+    execute rm -f "$to/$name"
+    execute cp "$from" "$to/$name"
+}
+
+# Example usage (uncomment and adjust as needed):
+# update_files "$DEV_ENV/env/.config" "$XDG_CONFIG_HOME"
+# update_files "$DEV_ENV/env/.local" "$HOME/.local"
+# copy "$DEV_ENV/tmux-sessionizer/tmux-sessionizer" "$HOME/.local/scripts/tmux-sessionizer"
+# copy "$DEV_ENV/env/.zsh_profile" "$HOME/.zsh_profile"
+# copy "$DEV_ENV/env/.zshrc" "$HOME/.zshrc"
+# copy "$DEV_ENV/env/.xprofile" "$HOME/.xprofile"
+# copy "$DEV_ENV/env/.tmux-sessionizer" "$HOME/.tmux-sessionizer"
+# copy "$DEV_ENV/dev-env" "$HOME/.local/scripts/dev-env"
+
+copy ".local/scripts" "$HOME/.local/scripts"
+chmod +x "$HOME/.local/scripts" -R
+

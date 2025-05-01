@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+if [[ -x ./ready-tmux ]]; then
+    zsh ./ready-tmux
+elif [[ -x ~/.ready-tmux ]]; then
+    zsh ~/.ready-tmux
+else
+    echo "No ready-tmux found"
+fi
+clear
