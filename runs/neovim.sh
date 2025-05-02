@@ -8,7 +8,7 @@ if [ ! -z $NVIM_VERSION ]; then
 fi
 
 echo "version: \"$version\""
-apt install git 
+sudo apt install git xclip
 
 # neovim btw
 if [ ! -d $HOME/neovim ]; then
