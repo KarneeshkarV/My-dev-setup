@@ -17,3 +17,4 @@ fi
 source ~/.profile
 go version
 go install github.com/danielmiessler/fabric@latest
+go install github.com/jesseduffield/lazygit@latest

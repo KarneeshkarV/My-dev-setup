@@ -1,95 +1,105 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Get the directory where the script is located
-script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+script_dir=$(cd "$(dirname "${(%):-%x}")" && pwd)
 
 # Initialize variables
-dry="0" # Use "1" for dry run, "0" to execute
+dry=0 # Use 1 for dry run, 0 to execute
 
 # --- Argument Parsing ---
 while [[ $# -gt 0 ]]; do
-    if [[ "$1" == "--dry" ]]; then
-        dry="1"
-    fi
-    shift
+  case "$1" in
+    --dry) dry=1 ;;
+    *)     break ;;
+  esac
+  shift
 done
 
 # --- Logging Function ---
 log() {
-    if [[ "$dry" == "1" ]]; then
-        echo "[DRY_RUN]: $1"
-    else
-        echo "$1"
-    fi
+  if (( dry )); then
+    echo "[DRY_RUN]: $1"
+  else
+    echo "$1"
+  fi
 }
 
 # --- Execution Function ---
 execute() {
-    log "Executing: \"$@\""
-    if [[ "$dry" == "1" ]]; then
-        log "(Skipped execution due to dry run)"
-        return 0
-    fi
-    "$@"
-    return $?
+  log "Executing: $*"
+  (( dry )) && { log "(skipped)"; return 0; }
+  "$@"
 }
 
-log "----------------------------- dev env -----------------------------" 
+log "----------------------------- dev env -----------------------------"
 
-update_files() {
-    src_dir=$1
-    dest_dir=${2%/}
+# --- Unused function (kept for reference) ---
+# update_files() {
+#   local src_dir=$1
+#   local dest_dir=${2%/}
+#
+#   log "Copying over files from: $src_dir"
+#   pushd "$src_dir" > /dev/null || return 1
+#
+#   for c in */; do
+#     local dest="$dest_dir/${c%/}"
+#     log "  removing: $dest"
+#     (( ! dry )) && rm -rf "$dest"
+#     log "  copying: $c → $dest_dir"
+#     (( ! dry )) && cp -r "$c" "$dest_dir"
+#   done
+#
+#   popd > /dev/null || return 1
+# }
 
-    log "Copying over files from: $src_dir"
-    pushd "$src_dir" > /dev/null || return 1
-
-    for c in */; do
-        directory="$dest_dir/${c%/}"
-        log "    removing: $directory"
-        if [[ "$dry" == "0" ]]; then
-            rm -rf "$directory"
-        fi
-
-        log "    copying: $c to $dest_dir"
-        if [[ "$dry" == "0" ]]; then
-            cp -r "$c" "$dest_dir"
-        fi
-    done
-
-    popd > /dev/null || return 1
-}
-
+# --- Copy Function ---
 copy() {
-    src=$1
-    dest=$2
-    log "Removing: $dest"
-    if [[ "$dry" == "0" ]]; then
-        rm -rf "$dest"
-    fi
-    log "Copying: $src to $dest"
-    if [[ "$dry" == "0" ]]; then
-        cp -r "$src" "$dest"
-    fi
+  local src=$1 dest=$2
+  # Ensure source exists before proceeding
+  if [[ ! -e "$src" ]]; then
+    log "ERROR: Source '$src' not found. Skipping copy."
+    return 1
+  fi
+  log "Removing: $dest"
+  (( ! dry )) && rm -rf "$dest"
+  log "Copying: $src → $dest"
+  (( ! dry )) && cp -r "$src" "$dest"
 }
 
-copy_file() {
-    from=$1
-    to=$2
-    name=$(basename "$from")
-    execute rm -f "$to/$name"
-    execute cp "$from" "$to/$name"
-}
+# --- Unused function (kept for reference) ---
+# copy_file() {
+#   local from=$1 to=$2 name=${from:t}
+#   execute rm -f "$to/$name"
+#   execute cp "$from" "$to/$name"
+# }
 
-# Example usage (uncomment and adjust as needed):
-# update_files "$DEV_ENV/env/.config" "$XDG_CONFIG_HOME"
-# update_files "$DEV_ENV/env/.local" "$HOME/.local"
-# copy "$DEV_ENV/tmux-sessionizer/tmux-sessionizer" "$HOME/.local/scripts/tmux-sessionizer"
-# copy "$DEV_ENV/env/.zsh_profile" "$HOME/.zsh_profile"
-# copy "$DEV_ENV/env/.zshrc" "$HOME/.zshrc"
-# copy "$DEV_ENV/env/.xprofile" "$HOME/.xprofile"
-# copy "$DEV_ENV/env/.tmux-sessionizer" "$HOME/.tmux-sessionizer"
-# copy "$DEV_ENV/dev-env" "$HOME/.local/scripts/dev-env"
+# === Your specific copies ===
+# Change directory to the script's directory to resolve relative paths
+cd "$script_dir" || exit 1
 
+copy ".zshrc"          "$HOME/.zshrc"
 copy ".local/scripts" "$HOME/.local/scripts"
-chmod +x "$HOME/.local/scripts" -R
 
+# Only source if we’re in an interactive Zsh session and the file exists
+if [[ -n "$ZSH_VERSION" && -f "$HOME/.zshrc" ]]; then
+  log "Sourcing $HOME/.zshrc in Zsh"
+  # Use '.' or 'source' - '.' is slightly more portable but source is fine in zsh
+  # Using the full path is more reliable than '~'
+  source "$HOME/.zshrc"
+elif [[ -f "$HOME/.zshrc" ]]; then
+    log "Not an interactive Zsh session, skipping source."
+else
+    log "WARNING: $HOME/.zshrc not found after copy. Cannot source."
+fi
+
+# Make all scripts in ~/.local/scripts executable, check if directory exists
+if [[ -d "$HOME/.local/scripts" ]]; then
+    log "Making scripts executable under $HOME/.local/scripts"
+    # Find regular files and make them executable
+    # Using find is safer than globbing if there are many files or none
+    find "$HOME/.local/scripts" -maxdepth 1 -type f -exec chmod +x {} \;
+else
+    log "Directory $HOME/.local/scripts does not exist, skipping chmod."
+fi
+
+log "----------------------------- dev env finished -----------------------------"
