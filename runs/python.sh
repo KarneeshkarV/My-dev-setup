@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # Install curl and add-apt-repository if not already present
 sudo apt update
 sudo apt install curl software-properties-common -y
