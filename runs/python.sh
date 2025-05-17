@@ -17,4 +17,4 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.local/bin/env 
     #source $HOME/.local/bin/env.fish (fish)
 
-
+pip install --user git+https://github.com/cjbassi/rofi-copyq

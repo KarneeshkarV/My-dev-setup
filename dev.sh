@@ -80,6 +80,9 @@ cd "$script_dir" || exit 1
 copy ".zshrc"          "$HOME/.zshrc"
 copy ".local/scripts" "$HOME/.local/scripts"
 
+copy ".config/i3" "$HOME/.config/i3"
+copy ".config/rofi" "$HOME/.config/rofi"
+copy ".config/ghostty" "$HOME/.config/ghostty"
 # Only source if we’re in an interactive Zsh session and the file exists
 if [[ -n "$ZSH_VERSION" && -f "$HOME/.zshrc" ]]; then
   log "Sourcing $HOME/.zshrc in Zsh"
