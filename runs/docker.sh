@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 sudo apt-get update
-sudo apt-get install ./docker-desktop-amd64.deb
+sudo apt-get install ./docker-desktop-amd64.deb -y
 systemctl --user start docker-desktop
 sudo usermod -aG docker $USER
 newgrp docker

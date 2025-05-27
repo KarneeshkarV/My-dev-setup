@@ -97,3 +97,4 @@ for script_path in $scripts_list; do
 done
 
 log "All matching scripts processed." # Completed the final message
+echo "Install BTOP++"

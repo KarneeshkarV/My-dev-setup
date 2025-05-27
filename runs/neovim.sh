@@ -1,21 +1,19 @@
 #!/usr/bin/env bash 
 echo "neo";
 sudo apt update
-sudo apt install ripgrep
+sudo apt install ripgrep git xclip cmake gettext lua5.1 liblua5.1-0-dev unzip wget 
+-y
+
 version="v0.10.2"
 if [ ! -z $NVIM_VERSION ]; then
     version="$NVIM_VERSION"
 fi
 
 echo "version: \"$version\""
-sudo apt install git xclip
-
 # neovim btw
 if [ ! -d $HOME/neovim ]; then
     git clone https://github.com/neovim/neovim.git $HOME/neovim --depth 3
 fi
-
-sudo apt -y install cmake gettext lua5.1 liblua5.1-0-dev unzip wget 
 
 git -C ~/neovim fetch --all
 git -C ~/neovim checkout $version

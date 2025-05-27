@@ -3,7 +3,7 @@
 sudo apt update
 sudo apt install curl software-properties-common -y
 
-sudo apt install python3.11-venv
+sudo apt install python3.11-venv -y
 # Add the deadsnakes PPA
 sudo add-apt-repository ppa:deadsnakes/ppa -y
 sudo apt update
