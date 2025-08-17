@@ -4,3 +4,5 @@ sudo apt-get install pulseaudio pavucontrol -y && pavucontrol
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
  ~/.fzf/install
  fzf --version
+cargo install git-delta
+cargo install du-dust
