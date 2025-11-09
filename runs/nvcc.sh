@@ -1,24 +1,47 @@
 #!/usr/bin/env bash
-curl -OL https://golang.org/dl/go1.16.7.linux-amd64.tar.gz
-sudo tar -C /usr/local -xvf go1.16.7.linux-amd64.tar.gz
-LINE='export PATH=$PATH:/usr/local/go/bin'
 
-# File to modify
-PROFILE="$HOME/.profile"
+# Get the script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-# Check if the line already exists
-if ! grep -Fxq "$LINE" "$PROFILE"; then
-    echo "$LINE" >> "$PROFILE"
-    echo "Line added to $PROFILE"
+# Source distro utilities
+source "$PROJECT_ROOT/lib/distro-utils.sh"
+
+# Initialize distro detection
+init_distro
+
+echo "Installing NVIDIA Container Toolkit..."
+
+case "$DISTRO" in
+    arch)
+        # Install NVIDIA Container Toolkit from AUR
+        echo "Installing nvidia-container-toolkit from AUR..."
+        yay -S --needed --noconfirm nvidia-container-toolkit
+        ;;
+    debian)
+        # Add NVIDIA Container Toolkit repository
+        echo "Adding NVIDIA Container Toolkit repository..."
+        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | \
+          sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+
+        curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+          sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+          sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+        # Install nvidia-container-toolkit
+        sudo apt update
+        install_packages nvidia-container-toolkit
+        ;;
+esac
+
+# Configure Docker to use NVIDIA runtime
+if command_exists docker; then
+    echo "Configuring Docker to use NVIDIA runtime..."
+    sudo nvidia-ctk runtime configure --runtime=docker
+    sudo systemctl restart docker
+    echo "Docker configured for NVIDIA GPU support"
 else
-    echo "Line already exists in $PROFILE"
+    echo "Docker not found. Install Docker first (run docker.sh)"
 fi
-source ~/.profile
-go version
-go install github.com/danielmiessler/fabric@latest
-curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
-  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
-sudo apt-get update
-sudo apt-get install -y nvidia-container-toolkit
+
+echo "NVIDIA Container Toolkit installation complete!"
