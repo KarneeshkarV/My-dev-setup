@@ -32,6 +32,27 @@ fi
 
 fzf --version
 
+# Install Homebrew if not present
+if ! command_exists brew; then
+    echo "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    # Add Homebrew to PATH for this session
+    if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    fi
+else
+    echo "Homebrew already installed"
+fi
+
+# Install gh CLI via Homebrew
+if command_exists brew; then
+    echo "Installing gh CLI..."
+    brew install gh
+else
+    echo "Homebrew not available. Skipping gh CLI installation."
+fi
+
 # Install Rust CLI tools via cargo
 if command_exists cargo; then
     echo "Installing Rust CLI tools..."
