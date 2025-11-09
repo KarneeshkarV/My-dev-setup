@@ -1,28 +1,34 @@
 #!/usr/bin/env bash
 echo "running first"
 
-# Become root user (if not already)
-if [[ "$EUID" -ne 0 ]]; then
-  echo "Attempting to gain root privileges..."
-  sudo su -  # Or simply: sudo -i
-else
-  echo "Already running as root."
-fi
+# Get the script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-# Update package lists
-apt update
+# Source distro utilities
+source "$PROJECT_ROOT/lib/distro-utils.sh"
 
-# Install sudo (if necessary)
-if ! command -v sudo &> /dev/null; then
+# Initialize distro detection
+init_distro
+
+# Install sudo if necessary (before we try to use it)
+if ! command_exists sudo; then
   echo "sudo is not installed. Installing..."
-  apt install -y sudo
+  case "$DISTRO" in
+    arch)
+      su -c 'pacman -S --noconfirm sudo'
+      ;;
+    debian)
+      su -c 'apt install -y sudo'
+      ;;
+  esac
 else
   echo "sudo is already installed."
 fi
 
-# Upgrade packages
-apt upgrade -y
+# Update and upgrade system
+update_system
 
-echo "Update and upgrade complete."
+echo "Update and upgrade complete for $DISTRO."
 
-exit 0 # Exit with success code
+exit 0
