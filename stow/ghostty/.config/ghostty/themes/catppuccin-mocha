@@ -1,0 +1,40 @@
+# Catppuccin Mocha Theme for Ghostty
+
+background = 1e1e2e
+foreground = cdd6f4
+
+cursor-color = f5e0dc
+selection-background = 353749
+selection-foreground = cdd6f4
+
+# Black
+palette = 0=#45475a
+palette = 8=#585b70
+
+# Red
+palette = 1=#f38ba8
+palette = 9=#f38ba8
+
+# Green
+palette = 2=#a6e3a1
+palette = 10=#a6e3a1
+
+# Yellow
+palette = 3=#f9e2af
+palette = 11=#f9e2af
+
+# Blue
+palette = 4=#89b4fa
+palette = 12=#89b4fa
+
+# Magenta
+palette = 5=#f5c2e7
+palette = 13=#f5c2e7
+
+# Cyan
+palette = 6=#94e2d5
+palette = 14=#94e2d5
+
+# White
+palette = 7=#bac2de
+palette = 15=#cdd6f4
