@@ -48,7 +48,6 @@ go version
 
 # Install Go tools
 echo "Installing Go CLI tools..."
-go install github.com/danielmiessler/fabric@latest
 go install github.com/jesseduffield/lazygit@latest
 
 echo "Go installation complete!"
