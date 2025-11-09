@@ -1,0 +1,12 @@
+[submodule "stow/tmux/.tmux/plugins/tpm"]
+	path = stow/tmux/.tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm
+[submodule "stow/tmux/.tmux/plugins/tmux"]
+	path = stow/tmux/.tmux/plugins/tmux
+	url = https://github.com/catppuccin/tmux
+[submodule "stow/tmux/.tmux/plugins/tmux-resurrect"]
+	path = stow/tmux/.tmux/plugins/tmux-resurrect
+	url = https://github.com/tmux-plugins/tmux-resurrect
+[submodule "stow/tmux/.tmux/plugins/tmux-sensible"]
+	path = stow/tmux/.tmux/plugins/tmux-sensible
+	url = https://github.com/tmux-plugins/tmux-sensible

@@ -46,3 +46,4 @@ gtk-titlebar = false
 window-save-state = always
 mouse-hide-while-typing = true
 window-decoration = true
+keybind = shift+enter=text:\n
