@@ -165,7 +165,7 @@ export NVM_DIR="$HOME/.nvm"
 export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
-
+export PATH="$HOME/.local/scripts:$PATH"
 # pnpm
 export PNPM_HOME="/home/karneeshkar/.local/share/pnpm"
 case ":$PATH:" in
