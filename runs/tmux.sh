@@ -1,39 +1,38 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-echo "Installing tmux and configuring plugins..."
+base_dirs=(~/Desktop/projects ~/Desktop/work ~/Desktop/personal ~/Desktop/Notes/)
 
-# Get the script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+selected=$(
+  find "${base_dirs[@]}" \
+    -mindepth 1 \
+    -maxdepth 1 \
+    -type d \
+  | fzf
+)
 
-# Source distro utilities
-source "$PROJECT_ROOT/lib/distro-utils.sh"
+# if nothing picked, bail
+if [[ -z "$selected" ]]; then
+  exit 0
+fi
 
-# Initialize distro detection
-init_distro
+# normalize session name
+selected_name=$(basename "$selected" | tr '.,: ' '____')
 
-# Install tmux
-echo "Installing tmux package..."
-install_packages tmux
+echo "selected: $selected"
+echo "session name: $selected_name"
 
-# Initialize git submodules for tmux plugins
-echo "Initializing tmux plugin submodules..."
-cd "$PROJECT_ROOT" || exit 1
-git submodule update --init --recursive stow/tmux/.tmux/plugins/tpm
-git submodule update --init --recursive stow/tmux/.tmux/plugins/tmux
-git submodule update --init --recursive stow/tmux/.tmux/plugins/tmux-resurrect
-git submodule update --init --recursive stow/tmux/.tmux/plugins/tmux-sensible
+switch_to() {
+  if [[ -z "$TMUX" ]]; then
+    tmux attach-session -t "$selected_name"
+  else
+    tmux switch-client -t "$selected_name"
+  fi
+}
 
-# Stow tmux configuration
-echo "Creating symlinks for tmux configuration..."
-cd "$PROJECT_ROOT/stow" || exit 1
-stow -v -t "$HOME" tmux
-
-echo ""
-echo "${GREEN}Tmux installed successfully!${NC}"
-echo ""
-echo "To complete plugin installation:"
-echo "  1. Start tmux: ${YELLOW}tmux${NC}"
-echo "  2. Press ${YELLOW}prefix + I${NC} (default: Ctrl+b then Shift+i) to install plugins"
-echo ""
-echo "Your tmux plugins will be automatically loaded on next tmux start."
+if tmux has-session -t="$selected_name" 2>/dev/null; then
+  switch_to
+else
+  tmux new-session -ds "$selected_name" -c "$selected"
+  switch_to
+  tmux send-keys -t "$selected_name" "ready-tmux" C-m
+fi
