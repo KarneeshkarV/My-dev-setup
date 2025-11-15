@@ -41,6 +41,7 @@
 # # which is explained in the docs for that config option.
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
+command = /usr/bin/zsh
 theme = catppuccin-mocha
 gtk-titlebar = false
 window-save-state = always
