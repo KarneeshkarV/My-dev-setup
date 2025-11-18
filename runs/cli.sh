@@ -21,6 +21,8 @@ fi
 # Audio system
 install_packages pulseaudio pavucontrol
 
+install_packages  yazi ffmpeg 7zip jq poppler fd ripgrep fzf zoxide resvg imagemagick
+
 # Install fzf (distro-agnostic)
 if [ ! -d ~/.fzf ]; then
     echo "Installing fzf..."

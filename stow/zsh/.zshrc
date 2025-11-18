@@ -13,6 +13,7 @@ cdx() {
 # --- Aliases ---
 alias bat="batcat"
 alias ls="exa --icons --group-directories-first"
+alias sound="pavucontrol"
 alias goose-ai='/home/karneeshkar/.local/bin/goose'
 alias goose-db='/home/karneeshkar/go/bin/goose'
 alias pbcopy='xclip -selection clipboard'
@@ -87,10 +88,20 @@ git fetch --all
 git pull --all
    
 }
+omen(){
+  ssh karneeshkar@192.168.0.106
+}
 zclaude() {
 export ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic
 export ANTHROPIC_AUTH_TOKEN=
 claude
+}
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
 }
 deepseek() {
     export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
@@ -162,9 +173,6 @@ eval "$(starship init zsh)"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-export ANDROID_HOME=$HOME/Android/Sdk
-export PATH=$PATH:$ANDROID_HOME/emulator
-export PATH=$PATH:$ANDROID_HOME/platform-tools
 export PATH="$HOME/.local/scripts:$PATH"
 # pnpm
 export PNPM_HOME="/home/karneeshkar/.local/share/pnpm"
@@ -174,6 +182,7 @@ case ":$PATH:" in
 esac
 # pnpm end
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
 
 # bun completions
 [ -s "/home/karneeshkar/.bun/_bun" ] && source "/home/karneeshkar/.bun/_bun"
