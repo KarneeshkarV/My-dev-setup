@@ -1,10 +1,10 @@
 
 cdx() {
   if [[ "$1" == "update" ]]; then
-    npm install -g @openai/codex@latest
+    brew upgrade @openai/codex@latest
   else
     codex \
-      --model 'gpt-5-codex' \
+      --model 'gpt-5.1-codex' \
       --full-auto \
       -c model_reasoning_summary_format=experimental \
       --search "$@"
@@ -13,7 +13,7 @@ cdx() {
 # --- Aliases ---
 alias bat="batcat"
 alias ls="exa --icons --group-directories-first"
-alias sound="pavucontrol"
+alias sound="pavucontrol &"
 alias goose-ai='/home/karneeshkar/.local/bin/goose'
 alias goose-db='/home/karneeshkar/go/bin/goose'
 alias pbcopy='xclip -selection clipboard'
@@ -25,6 +25,12 @@ alias claudeu='bunx ccusage daily'
 alias claudeum='bunx ccusage monthly'
 alias figma='bunx figma-developer-mcp --figma-api-key=$FIGMA_API_KEY'
 alias VimBeGood='docker run -it --rm brandoncc/vim-be-good:latest'
+fzf-history-widget() {
+  BUFFER=$(history -n 1 | tac | fzf --height 40% --reverse --border)
+  CURSOR=$#BUFFER
+}
+zle     -N   fzf-history-widget
+bindkey '^R' fzf-history-widget
 gAllBranch() {
   # 1) update all remotes
   git fetch --all
@@ -44,38 +50,6 @@ gAllBranch() {
 
   # 3) pull from all remotes
   git pull --all
-}
-fab() {
-  local url="$1"
-  local out="$2"
-  local selected_pattern
-  local cmd
-
-  # Prompt user to select a pattern using fzf
-  # The <&1 ensures fzf reads from the terminal even if stdin is redirected
-  # The --height option prevents fzf from taking the full screen if the list is short
-  selected_pattern=$(fabric -l | fzf --height 40% <&1)
-
-  # Exit if no pattern was selected (e.g., user pressed Esc or Ctrl+C)
-  if [[ -z "$selected_pattern" ]]; then
-    echo "No pattern selected. Aborting." >&2 # Send error message to stderr
-    return 1 # Indicate failure
-  fi
-
-  # Build the base command array using the selected pattern
-  cmd=(fabric "$url" -p="$selected_pattern" -s)
-
-  # Conditionally add the output argument if a second argument was provided
-  if [[ -n "$out" ]]; then
-    cmd+=(-o="$out")
-  fi
-
-  # Optional: Print the command that will be run (for debugging)
-  # echo "Running: noglob ${cmd[*]}"
-
-  # Run the command
-  # Using noglob prevents globbing expansion on the command arguments
-  noglob "${cmd[@]}"
 }
 git_fetch_all() {
 git branch -r \
@@ -122,51 +96,6 @@ cl(){
 weather(){
 curl http://wttr.in/$1
 }
-dan_sum() {
-  local url="$1"
-  local out="$2"
-
-  # base command
-  local cmd=(fabric -y="$url" -p=dan_summarize -s)
-
-  # only add -o if a second argument was provided
-  if [[ -n "$out" ]]; then
-    cmd+=(-o="$out")
-  fi
-
-  # run it
-noglob  "${cmd[@]}"
-}
-rate_label() {
-  local url="$1"
-  local out="$2"
-
-  # base command
-  local cmd=(fabric -y="$url" -p=label_and_rate -s)
-
-  # only add -o if a second argument was provided
-  if [[ -n "$out" ]]; then
-    cmd+=(-o="$out")
-  fi
-
-  # run it
-noglob  "${cmd[@]}"
-}
-sum() {
-  local url="$1"
-  local out="$2"
-
-  # base command
-  local cmd=(fabric -y="$url" -p=summarize -s)
-
-  # only add -o if a second argument was provided
-  if [[ -n "$out" ]]; then
-    cmd+=(-o="$out")
-  fi
-
-  # run it
-noglob  "${cmd[@]}"
-}
 # --- External Tools ---
 eval "$(starship init zsh)"
 
@@ -174,6 +103,13 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export PATH="$HOME/.local/scripts:$PATH"
+
+
+export ANDROID_SDK_ROOT=/opt/android-sdk
+export ANDROID_HOME=/opt/android-sdk
+export PATH=$PATH:/opt/android-sdk/emulator
+export PATH=$PATH:/opt/android-sdk/platform-tools
+export PATH=$PATH:/opt/android-sdk/cmdline-tools/latest/bin
 # pnpm
 export PNPM_HOME="/home/karneeshkar/.local/share/pnpm"
 case ":$PATH:" in
@@ -195,7 +131,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 eval "$(zoxide init --cmd cd zsh)"
 
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export PATH=$JAVA_HOME/bin:$PATH
 
 
