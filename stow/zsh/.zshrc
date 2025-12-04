@@ -90,15 +90,11 @@ alias reload='source ~/.zshrc'
 
 # Codex wrapper
 cdx() {
-    if [[ "$1" == "update" ]]; then
-        brew upgrade @openai/codex@latest
-    else
-        codex \
-            --model 'gpt-5.1-codex' \
-            --full-auto \
-            -c model_reasoning_summary_format=experimental \
-            --search "$@"
-    fi
+  if [[ "$1" == "update" ]]; then
+      brew upgrade codex
+  else
+     codex --search --sandbox=danger-full-access  -c sandbox_workspace_write.network_access=true
+  fi
 }
 
 # Git: fetch all branches and set up tracking
@@ -140,11 +136,17 @@ deepseek() {
 
 # Claude with default Anthropic backend
 cl() {
-    unset ANTHROPIC_BASE_URL
-    unset ANTHROPIC_AUTH_TOKEN
-    unset ANTHROPIC_MODEL
-    unset ANTHROPIC_SMALL_FAST_MODEL
+  if [[ "$1" == "update" ]]; then
+        brew upgrade claude
+  else
+#    unset ANTHROPIC_BASE_URL
+    #unset ANTHROPIC_AUTH_TOKEN
+    #unset ANTHROPIC_MODEL
+    #unset ANTHROPIC_SMALL_FAST_MODEL
     claude "$@"
+
+  fi
+
 }
 
 # Weather lookup

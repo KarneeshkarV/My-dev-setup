@@ -48,3 +48,6 @@ window-save-state = always
 mouse-hide-while-typing = true
 window-decoration = true
 keybind = shift+enter=text:\n
+
+# Slowdown mouse scrolling
+mouse-scroll-multiplier = 0.95
