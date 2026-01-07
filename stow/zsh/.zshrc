@@ -9,6 +9,7 @@ setopt INTERACTIVE_COMMENTS   # Allow comments in interactive shell
 setopt NO_BEEP                # Disable beeping
 setopt EXTENDED_GLOB          # Extended globbing capabilities
 setopt NULL_GLOB              # Don't error on no glob matches
+setopt GLOBDOTS               # Include hidden files in glob patterns
 setopt AUTO_PUSHD             # Make cd push the old directory onto the stack
 setopt PUSHD_IGNORE_DUPS      # Don't push duplicates onto the stack
 setopt PUSHD_SILENT           # Don't print the directory stack after pushd/popd
@@ -21,8 +22,8 @@ HISTFILE=~/.zsh_history
 setopt HIST_IGNORE_ALL_DUPS   # No duplicate entries
 setopt HIST_FIND_NO_DUPS      # No duplicates in search
 setopt HIST_REDUCE_BLANKS     # Remove unnecessary blanks
-setopt SHARE_HISTORY          # Share history between sessions
-setopt INC_APPEND_HISTORY     # Write immediately, not on exit
+setopt HIST_EXPIRE_DUPS_FIRST # Expire duplicates first when trimming
+setopt SHARE_HISTORY          # Share history between sessions (implies INC_APPEND_HISTORY)
 setopt EXTENDED_HISTORY       # Add timestamps to history
 setopt HIST_IGNORE_SPACE      # Don't record commands starting with space
 setopt HIST_VERIFY            # Show command before executing from history
@@ -62,6 +63,11 @@ path=(
 )
 export PATH
 
+# --- Directory Hashes (quick access with ~name) ---
+hash -d dl=~/Downloads
+hash -d docs=~/Documents
+hash -d conf=~/.config
+
 # --- Aliases ---
 # File navigation & listing
 alias ls="eza --icons --group-directories-first"
@@ -81,9 +87,9 @@ alias d='dirs -v'             # Show directory stack
 
 # Suffix aliases (auto-open files by extension)
 alias -s md="bat"
-alias -s mov="open"
-alias -s png="open"
-alias -s mp4="open"
+alias -s mov="xdg-open"
+alias -s png="xdg-open"
+alias -s mp4="xdg-open"
 alias -s go="$EDITOR"
 alias -s js="$EDITOR"
 alias -s ts="$EDITOR"
@@ -238,7 +244,14 @@ cl() {
         *)      claude "$@" ;;
     esac
 }
+cl_anti(){
+      cp ~/.claude/settings.anti.json ~/.claude/settings.json
+      npx antigravity-claude-proxy start
+  }
 
+cl_native(){
+      cp ~/.claude/settings.native.json ~/.claude/settings.json
+  }
 sleeps() {
     systemctl suspend
 }
@@ -282,18 +295,20 @@ extract() {
         return 1
     fi
     case "$1" in
-        *.tar.bz2)   tar xjf "$1"    ;;
-        *.tar.gz)    tar xzf "$1"    ;;
-        *.tar.xz)    tar xJf "$1"    ;;
-        *.bz2)       bunzip2 "$1"    ;;
-        *.rar)       unrar x "$1"    ;;
-        *.gz)        gunzip "$1"     ;;
-        *.tar)       tar xf "$1"     ;;
-        *.tbz2)      tar xjf "$1"    ;;
-        *.tgz)       tar xzf "$1"    ;;
-        *.zip)       unzip "$1"      ;;
-        *.Z)         uncompress "$1" ;;
-        *.7z)        7z x "$1"       ;;
+        *.tar.bz2)   tar xjf "$1"       ;;
+        *.tar.gz)    tar xzf "$1"       ;;
+        *.tar.xz)    tar xJf "$1"       ;;
+        *.tar.zst)   tar --zstd -xf "$1" ;;
+        *.bz2)       bunzip2 "$1"       ;;
+        *.rar)       unrar x "$1"       ;;
+        *.gz)        gunzip "$1"        ;;
+        *.tar)       tar xf "$1"        ;;
+        *.tbz2)      tar xjf "$1"       ;;
+        *.tgz)       tar xzf "$1"       ;;
+        *.zip)       unzip "$1"         ;;
+        *.Z)         uncompress "$1"    ;;
+        *.7z)        7z x "$1"          ;;
+        *.zst)       unzstd "$1"        ;;
         *)           echo "'$1' cannot be extracted" ;;
     esac
 }
@@ -301,13 +316,7 @@ extract() {
 # Find and kill process by port
 killport() {
     local port="${1:?Port required}"
-    local pid=$(lsof -t -i:$port)
-    if [[ -n "$pid" ]]; then
-        echo "Killing process $pid on port $port"
-        kill -9 "$pid"
-    else
-        echo "No process found on port $port"
-    fi
+    fuser -k "${port}/tcp" 2>/dev/null && echo "Killed process on port $port" || echo "No process on port $port"
 }
 
 # Quick HTTP server
@@ -336,18 +345,9 @@ ff() {
     find . -type f -iname "*$1*" 2>/dev/null
 }
 
-# Find directories quickly
-fd() {
+# Find directories quickly (named fdir to avoid conflict with fd-find)
+fdir() {
     find . -type d -iname "*$1*" 2>/dev/null
-}
-
-# Grep with context (use ripgrep if available)
-rg() {
-    if command -v rg &>/dev/null; then
-        command rg --smart-case "$@"
-    else
-        grep -rn --color=auto "$@"
-    fi
 }
 
 # Quick note taking
@@ -430,8 +430,14 @@ npm() { lazy_load_nvm && npm "$@"; }
 npx() { lazy_load_nvm && npx "$@"; }
 
 # --- External Tools Initialization ---
-# Homebrew (must be before completions)
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Homebrew (lazy-loaded for faster startup)
+_brew_shellenv_cache="$HOME/.cache/brew_shellenv"
+if [[ ! -f "$_brew_shellenv_cache" ]] || [[ "/home/linuxbrew/.linuxbrew/bin/brew" -nt "$_brew_shellenv_cache" ]]; then
+    mkdir -p "$(dirname "$_brew_shellenv_cache")"
+    /home/linuxbrew/.linuxbrew/bin/brew shellenv > "$_brew_shellenv_cache"
+fi
+source "$_brew_shellenv_cache"
+unset _brew_shellenv_cache
 
 # --- Completions ---
 autoload -Uz compinit

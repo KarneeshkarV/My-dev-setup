@@ -1,0 +1,2 @@
+gh
+font-fira-code-nerd-font

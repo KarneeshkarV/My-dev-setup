@@ -1,0 +1,12 @@
+android-emulator 36.3.10-1
+android-sdk 26.1.1-2
+android-sdk-build-tools r36.1-2
+android-sdk-cmdline-tools-latest 19.0-1
+android-sdk-platform-tools 36.0.0-1
+android-studio 2025.2.2.7-1
+brave-bin 1:1.85.116-1
+ipscan 3.9.3-1
+ngrok 3.34.1-1
+teams-for-linux 2.6.17-1
+twingate 2025.310.174671-1
+zen-browser-bin 1.17.14b-1
