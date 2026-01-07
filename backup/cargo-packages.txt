@@ -1,0 +1,3 @@
+du-dust
+git-delta
+tokei
