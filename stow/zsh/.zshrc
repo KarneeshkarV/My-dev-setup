@@ -138,6 +138,9 @@ alias ports="ss -tulanp"
 # --- Functions ---
 
 # Codex wrapper
+check_limits(){
+curl -s localhost:8080/account-limits | jq -r '.accounts[] | "\(.email): \(.limits | to_entries | map(select(.value.remaining != "100%" and .value.remaining != "N/A")) | length) models have limits below 100%"'
+}
 cdx() {
     if [[ "$1" == "update" ]]; then
         brew upgrade codex
@@ -245,11 +248,14 @@ cl() {
     esac
 }
 cl_anti(){
+
+      rm -rf ~/.claude/settings.json
       cp ~/.claude/settings.anti.json ~/.claude/settings.json
       npx antigravity-claude-proxy start
   }
 
 cl_native(){
+      rm -rf ~/.claude/settings.json
       cp ~/.claude/settings.native.json ~/.claude/settings.json
   }
 sleeps() {
@@ -334,7 +340,13 @@ json() {
         jq . "$1"
     fi
 }
-
+bench() {
+    local n="${1:-10}"
+    shift
+    for i in $(seq 1 "$n"); do
+        time ( eval "$@" ) 2>&1
+    done | grep real | awk '{sum+=$2; count++} END {print "Average:", sum/count "s"}'
+}
 # Quick file backup
 bak() {
     cp "$1" "$1.bak.$(date +%Y%m%d_%H%M%S)"
@@ -443,13 +455,12 @@ unset _brew_shellenv_cache
 autoload -Uz compinit
 autoload -Uz bashcompinit
 
-# Only regenerate completions once a day
-if [[ -n $HOME/.zcompdump(#qN.mh+24) ]]; then
-    compinit
-else
+autoload -Uz compinit
+if [[ -f ~/.zcompdump && $(date +'%j') == $(stat -c '%j' ~/.zcompdump 2>/dev/null) ]]; then
     compinit -C
+else
+    compinit
 fi
-
 bashcompinit
 
 # Completion styles
@@ -506,7 +517,9 @@ elif [[ -f /home/linuxbrew/.linuxbrew/share/zsh-syntax-highlighting/zsh-syntax-h
 fi
 
 # zsh-autosuggestions
-if [[ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+if [[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+elif [[ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
     source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 elif [[ -f /home/linuxbrew/.linuxbrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
     source /home/linuxbrew/.linuxbrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh

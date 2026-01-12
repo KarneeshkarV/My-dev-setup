@@ -34,5 +34,10 @@ if tmux has-session -t="$selected_name" 2>/dev/null; then
 else
   tmux new-session -ds "$selected_name" -c "$selected"
   switch_to
-  tmux send-keys -t "$selected_name" "ready-tmux" C-m
+  # Check for project-specific ready-tmux.sh first, then fall back to global
+  if [[ -x "$selected/ready-tmux.sh" ]]; then
+    tmux send-keys -t "$selected_name" "./ready-tmux.sh" C-m
+  elif command -v ready-tmux &>/dev/null; then
+    tmux send-keys -t "$selected_name" "ready-tmux" C-m
+  fi
 fi
