@@ -64,3 +64,4 @@ else
     echo "cargo not found. Skipping Rust tools installation."
     echo "Run rust.sh first to install Rust."
 fi
+brew install steipete/tap/gogcli

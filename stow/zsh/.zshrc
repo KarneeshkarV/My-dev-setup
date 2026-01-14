@@ -340,6 +340,87 @@ json() {
         jq . "$1"
     fi
 }
+tasks() {
+  local listId="${1:-MTYzNzYwMzkyMjM2OTk5MjUxMDk6MDow}"
+  local nowEpoch now5h
+  nowEpoch=$(date +%s)
+  now5h=$(( nowEpoch + 5 * 3600 ))
+
+  local tasksJson
+  tasksJson=$(gog tasks list "$listId" --json)
+
+  # Helper function to format dates with relative labels
+  format_task_date() {
+    local epoch=$1
+    local duedate=$2
+    local today_start=$(date -d "today 00:00:00" +%s)
+    local tomorrow_start=$(date -d "tomorrow 00:00:00" +%s)
+    local yesterday_start=$(date -d "yesterday 00:00:00" +%s)
+
+    local formatted_date
+    if [[ "$duedate" =~ T00:00:00\.000Z$ ]]; then
+      # All-day task - show relative date
+      if (( epoch >= today_start && epoch < tomorrow_start )); then
+        formatted_date="Today ($(TZ='Asia/Kolkata' date -d "@$epoch" '+%b %d'))"
+      elif (( epoch >= tomorrow_start && epoch < tomorrow_start + 86400 )); then
+        formatted_date="Tomorrow ($(TZ='Asia/Kolkata' date -d "@$epoch" '+%b %d'))"
+      elif (( epoch >= yesterday_start && epoch < today_start )); then
+        formatted_date="Yesterday ($(TZ='Asia/Kolkata' date -d "@$epoch" '+%b %d'))"
+      else
+        formatted_date=$(TZ='Asia/Kolkata' date -d "@$epoch" '+%a %b %d, %Y')
+      fi
+    else
+      # Task with specific time
+      formatted_date=$(TZ='Asia/Kolkata' date -d "@$epoch" '+%a %b %d, %Y %I:%M %p IST')
+    fi
+    echo "$formatted_date"
+  }
+
+  # Past/Overdue tasks (in red)
+  local pastTasks
+  pastTasks=$(echo "$tasksJson" | jq --arg s "$nowEpoch" -r '
+    .tasks[]
+    | select(.status == "needsAction")
+    | select(.due != null)
+    | ( .due | sub("\\.[0-9]{3}Z$"; "Z") | fromdate ) as $d
+    | select($d < ($s|tonumber))
+    | "\($d)|\(.due)|\(.title)"' | while IFS='|' read -r epoch duedate title; do
+      local formatted_date=$(format_task_date "$epoch" "$duedate")
+      echo "\e[31m${formatted_date}  ${title}\e[0m"
+    done)
+
+  # Upcoming tasks (in blue) - next 3 tasks, regardless of time
+  local upcomingTasks
+  upcomingTasks=$(echo "$tasksJson" | jq --arg s "$nowEpoch" -r '
+    [.tasks[]
+    | select(.status == "needsAction")
+    | select(.due != null)
+    | ( .due | sub("\\.[0-9]{3}Z$"; "Z") | fromdate ) as $d
+    | select($d >= ($s|tonumber))
+    | {epoch: $d, due: .due, title: .title}]
+    | sort_by(.epoch)
+    | .[:3][]
+    | "\(.epoch)|\(.due)|\(.title)"' | while IFS='|' read -r epoch duedate title; do
+      local formatted_date=$(format_task_date "$epoch" "$duedate")
+      echo "\e[34m${formatted_date}  ${title}\e[0m"
+    done)
+
+  # Display results
+  if [[ -n "$pastTasks" ]]; then
+    echo "\e[1;31m=== OVERDUE TASKS ===\e[0m"
+    echo "$pastTasks"
+  fi
+
+  if [[ -n "$upcomingTasks" ]]; then
+    [[ -n "$pastTasks" ]] && echo ""
+    echo "\e[1;34m=== UPCOMING (Next 3 Tasks) ===\e[0m"
+    echo "$upcomingTasks"
+  fi
+
+  if [[ -z "$pastTasks" && -z "$upcomingTasks" ]]; then
+    echo "No upcoming or overdue tasks."
+  fi
+}
 bench() {
     local n="${1:-10}"
     shift
