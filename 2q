@@ -1,0 +1,17 @@
+#!/bin/bash
+# OSC52 clipboard copy script for tmux + Ghostty over SSH.
+# When called from copy-pipe-and-cancel, stdout is not the pane's PTY, so we
+# write the DCS passthrough directly to the pane's PTY device. tmux reads from
+# the PTY master and (with allow-passthrough on) forwards the OSC 52 to Ghostty.
+
+buf=$(cat)
+buf64=$(printf "%s" "$buf" | base64 | tr -d '\n')
+
+if [ -n "$TMUX" ]; then
+    pane_tty=$(tmux display-message -p '#{pane_tty}')
+    printf '\033Ptmux;\033\033]52;c;%s\007\033\\' "$buf64" > "$pane_tty"
+elif [ -w /dev/tty ]; then
+    printf '\033]52;c;%s\007' "$buf64" > /dev/tty
+else
+    printf '\033]52;c;%s\007' "$buf64"
+fi
