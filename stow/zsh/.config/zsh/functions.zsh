@@ -43,16 +43,30 @@ gcq() {
     git add -A && git commit -m "${*:-Quick commit}"
 }
 
-# SSH to Omen machine
+
+# ===== Hosts =====
+OMEN_HOST="karneeshkar@192.168.0.106"
+THINKAR_HOST="thinkar@192.168.0.115"
+THINKAR_KEY="$HOME/.ssh/thinkar_key"
+
+# ===== Omen SSH =====
 omen() {
-    ssh karneeshkar@192.168.0.106
+    if [ $# -eq 0 ]; then
+        ssh "$OMEN_HOST"
+    else
+        ssh "$OMEN_HOST" "$@"
+    fi
 }
 
-# SSH to Thinkar machine
+# Run tmux-s on Omen and stay in zsh
+otmux-s() {
+    ssh -t "$OMEN_HOST" "/home/karneeshkar/.local/scripts/tmux-s; exec zsh"
+}
+
+# ===== Thinkar SSH =====
 thinkar() {
-    ssh -i ~/.ssh/thinkar_key thinkar@192.168.0.115
+    ssh -i "$THINKAR_KEY" "$THINKAR_HOST"
 }
-
 # Claude with Z.ai backend
 zclaude() {
     export ANTHROPIC_BASE_URL=https://api.z.ai/api/anthropic

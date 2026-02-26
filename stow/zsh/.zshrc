@@ -23,7 +23,8 @@ setopt HIST_IGNORE_ALL_DUPS   # No duplicate entries
 setopt HIST_FIND_NO_DUPS      # No duplicates in search
 setopt HIST_REDUCE_BLANKS     # Remove unnecessary blanks
 setopt HIST_EXPIRE_DUPS_FIRST # Expire duplicates first when trimming
-setopt SHARE_HISTORY          # Share history between sessions (implies INC_APPEND_HISTORY)
+unsetopt SHARE_HISTORY        # Don't share history between sessions (each shell has its own)
+unsetopt INC_APPEND_HISTORY   # Don't append to file immediately - keep session history isolated
 setopt EXTENDED_HISTORY       # Add timestamps to history
 setopt HIST_IGNORE_SPACE      # Don't record commands starting with space
 setopt HIST_VERIFY            # Show command before executing from history
