@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-base_dirs=(~/Desktop/projects/ ~/Desktop/work/ ~/Desktop/personal/ ~/Desktop/notes/)
+base_dirs=(~/Desktop/projects/ ~/Desktop/work/ ~/Desktop/personal/ ~/Desktop/Notes/)
 
 selected=$(
   find "${base_dirs[@]}" \
