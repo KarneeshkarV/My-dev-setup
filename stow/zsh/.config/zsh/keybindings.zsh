@@ -16,7 +16,7 @@ bindkey '^R' fzf-history-widget
 # FZF file widget
 fzf-file-widget() {
     local file
-    file=$(fzf --height 40% --reverse --border --preview 'batcat --color=always --line-range :100 {} 2>/dev/null || cat {}')
+    file=$(find . -type f -not -path '*/.git/*' 2>/dev/null | fzf --height 40% --reverse --border --preview 'batcat --color=always --line-range :100 {} 2>/dev/null || cat {}')
     [[ -n "$file" ]] && LBUFFER+="$file"
     zle reset-prompt
 }
@@ -37,6 +37,14 @@ bindkey '^G' fzf-cd-widget
 autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^x^e' edit-command-line
+
+# Tmux session switcher
+tmux-s-widget() {
+    tmux-s
+    zle reset-prompt
+}
+zle -N tmux-s-widget
+bindkey '^P' tmux-s-widget
 
 # Word navigation
 bindkey '^[[1;5C' forward-word   # Ctrl+Right
