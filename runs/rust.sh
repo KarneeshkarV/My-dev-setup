@@ -39,3 +39,4 @@ fi
 echo "Rust installation complete!"
 rustc --version
 cargo --version
+cargo install just
