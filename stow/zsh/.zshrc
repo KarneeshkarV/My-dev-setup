@@ -75,3 +75,11 @@ for config_file in "$ZSH_CONFIG_DIR"/*.zsh(N); do
     source "$config_file"
 done
 unset config_file
+
+# pnpm
+export PNPM_HOME="/home/karneeshkar/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end

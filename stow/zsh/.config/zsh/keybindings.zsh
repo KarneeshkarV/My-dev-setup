@@ -40,8 +40,8 @@ bindkey '^x^e' edit-command-line
 
 # Tmux session switcher
 tmux-s-widget() {
-    tmux-s
-    zle reset-prompt
+    BUFFER="tmux-s"
+    zle accept-line
 }
 zle -N tmux-s-widget
 bindkey '^P' tmux-s-widget
