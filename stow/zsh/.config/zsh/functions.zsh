@@ -86,39 +86,21 @@ deepseek() {
 }
 
 cl_cycle() {
-    local CREDS=(".credentials.val.json" ".credentials.2cc.json" ".credentials.harz.json")
+    local -a CREDS=(".credentials.har.json" ".credentials.val.json")
     local ACTIVE=".credentials.json"
-    local CREDS_DIR="$HOME/.claude"
+    local STATE=".credentials.cycle"
+    local DIR="$HOME/.claude"
 
-    cd "$CREDS_DIR" || return 1
+    local cur=0
+    [[ -f "$DIR/$STATE" ]] && cur=$(<"$DIR/$STATE")
+    local nxt=$(( (cur + 1) % 2 ))
 
-    if [[ ! -f "$ACTIVE" ]]; then
-        if [[ -f "${CREDS[1]}" ]]; then
-            mv "${CREDS[1]}" "$ACTIVE"
-            echo "Activated: ${CREDS[1]} -> $ACTIVE"
-        else
-            echo "Error: No credential files found!"
-            return 1
-        fi
-        cd - > /dev/null
-        return 0
-    fi
+    [[ ! -f "$DIR/${CREDS[$((nxt+1))]}" ]] && { echo "Error: ${CREDS[$((nxt+1))]} not found"; return 1 }
 
-    for i in {1..${#CREDS[@]}}; do
-        if [[ ! -f "${CREDS[$i]}" ]]; then
-            mv "$ACTIVE" "${CREDS[$i]}"
-            local next_i=$(( i % ${#CREDS[@]} + 1 ))
-            mv "${CREDS[$next_i]}" "$ACTIVE"
-            echo "Switched: ${CREDS[$i]} -> ${CREDS[$next_i]}"
-            echo "Active credential: ${CREDS[$next_i]}"
-            cd - > /dev/null
-            return 0
-        fi
-    done
-
-    echo "Error: Could not determine active credential file!"
-    cd - > /dev/null
-    return 1
+    [[ -f "$DIR/$ACTIVE" ]] && mv "$DIR/$ACTIVE" "$DIR/${CREDS[$((cur+1))]}"
+    mv "$DIR/${CREDS[$((nxt+1))]}" "$DIR/$ACTIVE"
+    echo "$nxt" > "$DIR/$STATE"
+    echo "active: ${CREDS[$((nxt+1))]}"
 }
 
 # Claude with default Anthropic backend
