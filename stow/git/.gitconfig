@@ -8,7 +8,7 @@
 	enabled = true
 
 [core]
-    pager = delta
+	pager = hunk pager
 
 [interactive]
     diffFilter = delta --color-only

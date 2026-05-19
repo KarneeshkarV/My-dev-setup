@@ -4,10 +4,24 @@
 # bindkey -v
 # export KEYTIMEOUT=1
 
-# FZF history widget
+# FZF history widget — session commands first, then global by frequency
 fzf-history-widget() {
-    BUFFER=$(history -n 1 | tac | fzf --height 40% --reverse --border --query="$LBUFFER")
-    CURSOR=$#BUFFER
+    local result session_start
+    session_start=${_zsh_session_start_event:-0}
+
+    result=$(
+        {
+            # 1. Current session commands (most recent first)
+            fc -rln $((session_start + 1)) -1 2>/dev/null | sed 's/^[[:space:]]*//'
+            # 2. Pre-session history sorted by frequency
+            fc -ln 1 "$session_start" 2>/dev/null | sed 's/^[[:space:]]*//' \
+                | sort | uniq -c | sort -rn | sed 's/^[[:space:]]*[0-9]*[[:space:]]*//'
+        } | awk '!seen[$0]++' | fzf --height 40% --reverse --border --query="$LBUFFER"
+    )
+    if [[ -n "$result" ]]; then
+        BUFFER="$result"
+        CURSOR=$#BUFFER
+    fi
     zle reset-prompt
 }
 zle -N fzf-history-widget

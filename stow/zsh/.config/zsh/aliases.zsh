@@ -43,6 +43,9 @@ alias sound="pavucontrol &"
 alias goose-ai='/home/karneeshkar/.local/bin/goose'
 alias goose-db='/home/karneeshkar/go/bin/goose'
 
+# GitHub CLI
+alias ghs='gh auth switch'
+
 # Claude usage
 alias claudeu='bunx ccusage daily'
 alias claudeum='bunx ccusage monthly'
