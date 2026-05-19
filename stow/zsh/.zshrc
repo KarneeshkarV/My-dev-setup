@@ -29,6 +29,10 @@ setopt EXTENDED_HISTORY       # Add timestamps to history
 setopt HIST_IGNORE_SPACE      # Don't record commands starting with space
 setopt HIST_VERIFY            # Show command before executing from history
 
+# Track session boundary for per-session history priority in search
+_zsh_session_start_event=$(fc -l -1 2>/dev/null | awk '{print $1}')
+: ${_zsh_session_start_event:=0}
+
 # --- Environment Variables ---
 export EDITOR="nvim"
 export VISUAL="nvim"
@@ -69,6 +73,15 @@ hash -d dl=~/Downloads
 hash -d docs=~/Documents
 hash -d conf=~/.config
 
+# --- Auto-attach to tmux (for Ghostty tab restore) ---
+if [[ -z "$TMUX" ]] && [[ "$TERM_PROGRAM" == "ghostty" ]]; then
+    # Find an unattached tmux session and attach to it
+    unattached=$(tmux ls -F '#{session_name}:#{session_attached}' 2>/dev/null | awk -F: '$2 == "0" {print $1; exit}')
+    if [[ -n "$unattached" ]]; then
+        exec tmux attach-session -t "$unattached"
+    fi
+fi
+
 # --- Load Modular Config ---
 ZSH_CONFIG_DIR="${ZDOTDIR:-$HOME/.config/zsh}"
 for config_file in "$ZSH_CONFIG_DIR"/*.zsh(N); do
@@ -83,3 +96,17 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# opencode
+export PATH=/home/karneeshkar/.opencode/bin:$PATH
+
+# --- Pi defaults ---
+# Start pi plain by default: don't auto-load AGENTS.md/CLAUDE.md from parent folders.
+# To opt a project back into context-file loading, create .pi/load-context-files in that project.
+pi() {
+    if [[ -f .pi/load-context-files ]]; then
+        command pi "$@"
+    else
+        command pi --no-context-files "$@"
+    fi
+}

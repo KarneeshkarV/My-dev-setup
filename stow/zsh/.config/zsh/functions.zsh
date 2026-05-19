@@ -6,7 +6,7 @@ curl -s localhost:8080/account-limits | jq -r '.accounts[] | "\(.email): \(.limi
 }
 cdx() {
     if [[ "$1" == "update" ]]; then
-        brew upgrade codex
+        brew upgrade --cask codex
     else
         codex --search --sandbox=danger-full-access -c sandbox_workspace_write.network_access=true
     fi
@@ -86,21 +86,43 @@ deepseek() {
 }
 
 cl_cycle() {
-    local -a CREDS=(".credentials.har.json" ".credentials.val.json")
-    local ACTIVE=".credentials.json"
-    local STATE=".credentials.cycle"
     local DIR="$HOME/.claude"
+    local ACTIVE=".credentials.json"
+    local SLOT1=".credentials.har.json"
+    local SLOT2=".credentials.val.json"
+    local STATE=".credentials.cycle"
+    local TMP=".credentials.cycle.tmp.$$"
 
-    local cur=0
-    [[ -f "$DIR/$STATE" ]] && cur=$(<"$DIR/$STATE")
-    local nxt=$(( (cur + 1) % 2 ))
+    [[ ! -f "$DIR/$ACTIVE" ]] && { echo "Error: $ACTIVE not found"; return 1 }
 
-    [[ ! -f "$DIR/${CREDS[$((nxt+1))]}" ]] && { echo "Error: ${CREDS[$((nxt+1))]} not found"; return 1 }
+    local mode=""
+    if [[ -f "$DIR/$SLOT1" && -f "$DIR/$SLOT2" ]]; then
+        # 3-way rotate: active <- har, har <- val, val <- (old active)
+        mv "$DIR/$ACTIVE" "$DIR/$TMP" || return 1
+        mv "$DIR/$SLOT1"  "$DIR/$ACTIVE" || { mv "$DIR/$TMP" "$DIR/$ACTIVE"; return 1 }
+        mv "$DIR/$SLOT2"  "$DIR/$SLOT1"  || return 1
+        mv "$DIR/$TMP"    "$DIR/$SLOT2"  || return 1
+        mode="rotated"
+    elif [[ -f "$DIR/$SLOT1" ]]; then
+        mv "$DIR/$ACTIVE" "$DIR/$TMP"    || return 1
+        mv "$DIR/$SLOT1"  "$DIR/$ACTIVE" || { mv "$DIR/$TMP" "$DIR/$ACTIVE"; return 1 }
+        mv "$DIR/$TMP"    "$DIR/$SLOT1"  || return 1
+        mode="swapped har"
+    elif [[ -f "$DIR/$SLOT2" ]]; then
+        mv "$DIR/$ACTIVE" "$DIR/$TMP"    || return 1
+        mv "$DIR/$SLOT2"  "$DIR/$ACTIVE" || { mv "$DIR/$TMP" "$DIR/$ACTIVE"; return 1 }
+        mv "$DIR/$TMP"    "$DIR/$SLOT2"  || return 1
+        mode="swapped val"
+    else
+        echo "Error: no backup credentials found"; return 1
+    fi
 
-    [[ -f "$DIR/$ACTIVE" ]] && mv "$DIR/$ACTIVE" "$DIR/${CREDS[$((cur+1))]}"
-    mv "$DIR/${CREDS[$((nxt+1))]}" "$DIR/$ACTIVE"
-    echo "$nxt" > "$DIR/$STATE"
-    echo "active: ${CREDS[$((nxt+1))]}"
+    local idx=0
+    [[ -f "$DIR/$STATE" ]] && idx=$(<"$DIR/$STATE")
+    echo $(( (idx + 1) % 3 )) > "$DIR/$STATE"
+
+    local tier=$(grep -o '"subscriptionType":"[^"]*"' "$DIR/$ACTIVE" 2>/dev/null | head -1 | cut -d'"' -f4)
+    echo "$mode; active tier: ${tier:-unknown}"
 }
 
 # Claude with default Anthropic backend
