@@ -2,3 +2,12 @@
 .agents/skills/.system/
 # tool-installed dependencies inside skills
 **/node_modules/
+
+# pi: local model/provider config holds plaintext API keys
+.pi/agent/models.json
+.pi/agent/models-store.json
+.pi/agent/cursor-sdk-model-list.json
+.pi/agent/auth.json
+.pi/agent/trust.json
+# vendored davis7 setup: build artifacts, not sources
+.pi/agent/davis7-my-pi-setup/.selected-extension-test-runtime/
