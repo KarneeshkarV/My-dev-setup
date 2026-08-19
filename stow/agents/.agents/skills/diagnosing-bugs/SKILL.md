@@ -9,6 +9,17 @@ A discipline for hard bugs. Skip phases only when explicitly justified.
 
 When exploring the codebase, read `CONTEXT.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching.
 
+Pattern:
+
+Reproduce first (if you can't reproduce it, you can't verify your fix)
+Resist the urge to add guards (adding a nil check to silence a crash is a symptom fix)
+If a workaround needs a paragraph-long comment to justify it, the code is wrong (fix the code, not the comment)
+Check for the pattern, not just the instance (grep for the same pattern, fix all instances)
+When stuck, instrument. Don't guess (add logging, read the actual error)
+Restart bugs: suspect state before code
+
+Code doesn't change between runs. State does. When something "fails after restart," suspect stale persistent state first: config files, caches, lock files, serialized state. If clearing a state file restores behavior, prioritize state validation as the fix.
+
 ## Redact
 
 This skill has you show commands, outputs and captured artifacts. **Redact every secret first**: write `<REDACTED>` in its place. Build loops against env vars, so the credential stays in the environment rather than in what you show. Captured artifacts carry auth headers: quote only the lines that carry the signal.
