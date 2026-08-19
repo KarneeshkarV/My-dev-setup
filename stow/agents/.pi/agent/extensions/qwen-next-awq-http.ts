@@ -16,7 +16,10 @@ import type { ExtensionAPI } from '@earendil-works/pi-coding-agent';
  * - QWEN_NEXT_AWQ_HTTP_MAX_TOKENS
  */
 export default function (pi: ExtensionAPI) {
-  const BASE_URL = process.env.QWEN_NEXT_AWQ_HTTP_BASE_URL ?? "";
+  const BASE_URL = process.env.QWEN_NEXT_AWQ_HTTP_BASE_URL;
+  if (!BASE_URL) {
+    return;
+  }
   const MODEL_ID = process.env.QWEN_NEXT_AWQ_HTTP_MODEL_ID ?? "bullpoint/Qwen3-Coder-Next-AWQ-4bit";
   const CONTEXT_WINDOW = Number(process.env.QWEN_NEXT_AWQ_HTTP_CONTEXT) || 65536;
   const MAX_TOKENS = Number(process.env.QWEN_NEXT_AWQ_HTTP_MAX_TOKENS) || 8192;

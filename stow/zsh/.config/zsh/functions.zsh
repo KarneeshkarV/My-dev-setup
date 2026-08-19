@@ -127,13 +127,6 @@ cl() {
         *)      claude "$@" ;;
     esac
 }
-cl_anti(){
-
-      rm -rf ~/.claude/settings.json
-      cp ~/.claude/settings.anti.json ~/.claude/settings.json
-      bunx antigravity-claude-proxy start
-  }
-
 cl_native(){
       rm -rf ~/.claude/settings.json
       cp ~/.claude/settings.native.json ~/.claude/settings.json

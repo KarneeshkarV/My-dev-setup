@@ -33,8 +33,6 @@
 	helper = !/home/linuxbrew/.linuxbrew/bin/gh auth git-credential
 [fetch]
 	prune = true
-[credential]
-	helper = store
 [pager]
 	diff = hunk pager
 	show = hunk pager

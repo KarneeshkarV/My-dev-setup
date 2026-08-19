@@ -107,8 +107,7 @@ else
     echo "⚠ Scripts directory not found: $SCRIPTS_DIR"
 fi
 
-# Initialize Starship in .zshrc
-curl -sS https://starship.rs/install.sh | sh
+# Initialize Starship in .zshrc (install happens once above)
 if command_exists starship; then
     echo ""
     echo "Setting up Starship initialization..."

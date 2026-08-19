@@ -17,21 +17,17 @@ init_distro
 echo "Installing build dependencies..."
 install_mapped_packages ripgrep git xclip cmake gettext lua5.1 liblua5.1-0-dev unzip wget make
 
-# Neovim version
-version="${NVIM_VERSION:-v0.10.2}"
-echo "Neovim version: \"$version\""
+# Build from current origin/master HEAD
+echo "Neovim version: origin/master HEAD"
 
-# Clone or update neovim repository
 if [ ! -d "$HOME/neovim" ]; then
     echo "Cloning Neovim repository..."
-    git clone https://github.com/neovim/neovim.git "$HOME/neovim" --depth 3
+    git clone --depth 1 --branch master https://github.com/neovim/neovim.git "$HOME/neovim"
 else
-    echo "Neovim repository already exists"
+    echo "Updating Neovim repository to origin/master..."
+    git -C "$HOME/neovim" fetch --depth 1 origin master
+    git -C "$HOME/neovim" checkout -B master origin/master
 fi
-
-# Fetch and checkout version
-git -C ~/neovim fetch --all
-git -C ~/neovim checkout "$version"
 
 # Build and install Neovim
 echo "Building Neovim..."
@@ -51,7 +47,7 @@ fi
 if ! command_exists luarocks; then
     echo "Installing Luarocks..."
     cd /tmp
-    wget --no-check-certificate https://luarocks.org/releases/luarocks-3.11.1.tar.gz
+    wget https://luarocks.org/releases/luarocks-3.11.1.tar.gz
     tar zxpf luarocks-3.11.1.tar.gz
     cd luarocks-3.11.1
     ./configure && make && sudo make install

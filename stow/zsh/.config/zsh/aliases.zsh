@@ -52,7 +52,6 @@ alias claudeum='bunx ccusage monthly'
 
 # Misc utilities
 alias notify='curl -d "done" http://192.168.0.107/notify'
-alias figma='bunx figma-developer-mcp --figma-api-key=$FIGMA_API_KEY'
 alias VimBeGood='docker run -it --rm brandoncc/vim-be-good:latest'
 
 # Quick config edits
