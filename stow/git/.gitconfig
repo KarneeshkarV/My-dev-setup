@@ -1,7 +1,3 @@
-[user]
-	email = karneeshkar68@gmail.com
-	name = Karneeshkar
-
 [includeIf "gitdir:~/Desktop/work/"]
     path = ~/.gitconfig-work
 [rerere]

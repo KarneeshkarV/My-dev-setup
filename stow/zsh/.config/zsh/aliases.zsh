@@ -51,7 +51,6 @@ alias claudeu='bunx ccusage daily'
 alias claudeum='bunx ccusage monthly'
 
 # Misc utilities
-alias notify='curl -d "done" http://192.168.0.107/notify'
 alias VimBeGood='docker run -it --rm brandoncc/vim-be-good:latest'
 
 # Quick config edits
