@@ -1,0 +1,24 @@
+[cli]
+installer = "internal"
+auto_update = true
+
+[ui]
+max_thoughts_width = 120
+fork_secondary_model = "grok-build"
+yolo = false
+compact_mode = true
+permission_mode = "always-approve"
+
+[marketplace]
+official_marketplace_auto_installed = true
+default_skills_installs_purged = true
+
+[[marketplace.sources]]
+name = "xAI Official"
+git = "https://github.com/xai-org/plugin-marketplace.git"
+
+[models]
+default = "grok-composer-2.5-fast"
+
+[privacy]
+privacy_banner_acked = "2026-08-17T16:01:35Z"

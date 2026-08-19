@@ -1,0 +1,297 @@
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
+plan_mode_reasoning_effort = "high"
+
+service_tier = "default"
+
+personality = "pragmatic"
+model_verbosity = "low"
+model_reasoning_summary = "concise"
+[notice]
+hide_gpt5_1_migration_prompt = true
+"hide_gpt-5.1-codex-max_migration_prompt" = true
+hide_rate_limit_model_nudge = true
+
+[notice.model_migrations]
+"gpt-5.1-codex-max" = "gpt-5.2-codex"
+"gpt-5.3-codex" = "gpt-5.4"
+
+[projects."/home/karneeshkar/Desktop/work/Valura_AI"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/work/Valura_Mob"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/projects/portfolio-website"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/happy_babie_project"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Farmer"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/thermal_cam"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Polymarket_Py"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Farmer/FarmerFrontend"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Sign_lang/basics_of_sign_language_revamp"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Sign_lang"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Sign_lang/sign-lang-backend"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/auto_email"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/gmail_expence_automation"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/level2"]
+trust_level = "trusted"
+
+[projects."/tmp/sign_language_translation"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/projects/My-dev-setup"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/level2/Level2_app"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Notes/notes"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/level2/level2_admin"]
+trust_level = "trusted"
+
+[projects."/tmp/t3code"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/claude_code"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Farmer/Farmer_admin"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/random_stuff"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/test_cloudfalir_wasm"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/test_cloudfalir_wasm/test"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/projects/ssh-tui-portfolio"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/career-ops"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_stocks"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/github/codex"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/work"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/github/t3_code"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/opencode_hack_research_agent"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/chat_to_llm"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/github/chat2api"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/OpenDesign"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/github/ActivSpot"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/github/agentation"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/kite_extention"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/github/linkedincli"]
+trust_level = "trusted"
+
+[projects."/tmp/synapse"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/my-job-solutions-crm"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Farmer/FarmerMobile"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_bot"]
+trust_level = "trusted"
+
+[projects."/tmp/valura-ai-ai-engineer-assignment-sandeepgoudmacha"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/ai_bar"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/AI Usage Bar"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/trading_view_extention"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/ias_land_tracker"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing/odd_agent_task_packet"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/github/P4RS3LT0NGV3"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Polymarket"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Polymarket/Polymarket_py"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/llm_infrence_basics"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/block_extention"]
+trust_level = "trusted"
+
+[projects."/tmp/temp_finaince"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing/my-job-solutions-crm"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/projects/calnder_ai"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing/Ascendere"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/screener"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Documents/books to read"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Documents/forms"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Downloads"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing/Ascendere/Ascendere-AI"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing/Ascendere/ascendere-admin-hub"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing/My-Job-Solutions"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing/My-Job-Solutions/my-job-solutions-crm"]
+trust_level = "trusted"
+
+[projects."/tmp"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/data_scraper"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/level2/level2_backend"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/finfluncer_dataset"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/Freelancing/level2_coaching"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/stockscan_py"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/stockedge_py"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/screener_bot"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/gym_tracker_alert"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/option_data_collection"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/option_backtester_and_stargry"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/backOptions"]
+trust_level = "trusted"
+
+[projects."/tmp/claude-1000/-home-karneeshkar-Desktop-personal-screener-main-screener/b9c5b74d-1078-4e5d-be6b-0de2c8286c57/scratchpad"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/work/runpod_infra"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/work/benchmark"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/OneBacktesterToRuleThemAll"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/Farmer/Backend"]
+trust_level = "trusted"
+
+[projects."/home/karneeshkar/Desktop/personal/screener_main/exection_trade"]
+trust_level = "trusted"
+
+[features]
+default_mode_request_user_input = true
+unified_exec = true
+steer = true
+js_repl = true
+goals = true
+
+[tui]
+status_line = ["model-with-reasoning", "context-remaining", "current-dir", "five-hour-limit"]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+"gpt-5.6-sol" = 4
+
+

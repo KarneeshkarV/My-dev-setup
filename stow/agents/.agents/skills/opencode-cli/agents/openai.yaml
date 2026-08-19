@@ -1,0 +1,7 @@
+interface:
+  display_name: "OpenCode CLI"
+  short_description: "Drive OpenCode agents headlessly and check their status"
+  default_prompt: "Use $opencode-cli to delegate a task to an OpenCode agent headlessly, then report the result and cost."
+
+policy:
+  allow_implicit_invocation: true

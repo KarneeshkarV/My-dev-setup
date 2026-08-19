@@ -1,0 +1,35 @@
+{
+  "version": 3,
+  "skills": {
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "c2f31172b6f256272305a5e6e7228b258446899f",
+      "installedAt": "2026-02-05T11:32:25.117Z",
+      "updatedAt": "2026-02-05T11:32:25.117Z"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/anthropics/skills.git",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "skillFolderHash": "928950704df8a8b885c03de5da626331e6f29cf8",
+      "installedAt": "2026-02-05T11:32:16.299Z",
+      "updatedAt": "2026-02-05T11:32:16.299Z"
+    },
+    "grok-cli": {
+      "source": "KarneeshkarV/grok-cli-skill",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/KarneeshkarV/grok-cli-skill.git",
+      "skillPath": "grok-cli/SKILL.md",
+      "skillFolderHash": "f90127d3a2d721eed8047c02f1f3846dfa854e02",
+      "installedAt": "2026-07-09T14:59:57Z",
+      "updatedAt": "2026-07-09T15:00:02Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  }
+}
