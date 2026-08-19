@@ -344,3 +344,15 @@ zbench() {
         time zsh -i -c exit
     done
 }
+gssh () {
+        local line
+        line=$(
+        gcloud compute instances list \
+            --filter="status=RUNNING" \
+            --format="table[no-heading](name,zone,machineType.basename(),networkInterfaces[0].networkIP)" |
+        column -t |
+        fzf --prompt="VM > "
+    )  || return
+        read -r name zone _ _ <<< "$line"
+        gcloud compute ssh "$name" --zone="$zone"
+}
