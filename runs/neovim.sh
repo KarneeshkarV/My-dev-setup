@@ -17,17 +17,61 @@ init_distro
 echo "Installing build dependencies..."
 install_mapped_packages ripgrep git xclip cmake gettext lua5.1 liblua5.1-0-dev unzip wget make
 
-# Build from current origin/master HEAD
-echo "Neovim version: origin/master HEAD"
+# Latest master commit whose `test.yml` CI run succeeded. Fallback: nightly tag.
+resolve_healthy_nvim_sha() {
+    python3 - <<'PY'
+import json, sys, urllib.request
 
-if [ ! -d "$HOME/neovim" ]; then
-    echo "Cloning Neovim repository..."
-    git clone --depth 1 --branch master https://github.com/neovim/neovim.git "$HOME/neovim"
-else
-    echo "Updating Neovim repository to origin/master..."
-    git -C "$HOME/neovim" fetch --depth 1 origin master
-    git -C "$HOME/neovim" checkout -B master origin/master
+url = (
+    "https://api.github.com/repos/neovim/neovim/actions/workflows/test.yml/runs"
+    "?branch=master&event=push&status=success&per_page=5"
+)
+req = urllib.request.Request(
+    url,
+    headers={
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "myDev-setup-nvim",
+    },
+)
+try:
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        data = json.load(resp)
+except Exception as exc:
+    sys.stderr.write(f"GitHub API lookup failed: {exc}\n")
+    sys.exit(1)
+
+for run in data.get("workflow_runs", []):
+    sha = run.get("head_sha")
+    if sha and run.get("head_branch") == "master":
+        print(sha)
+        sys.exit(0)
+sys.exit(1)
+PY
+}
+
+NVIM_REPO="https://github.com/neovim/neovim.git"
+NVIM_SHA="${NVIM_SHA:-}"
+if [ -z "$NVIM_SHA" ]; then
+    NVIM_SHA="$(resolve_healthy_nvim_sha || true)"
 fi
+
+if [ -n "$NVIM_SHA" ]; then
+    echo "Neovim version: CI-green master $NVIM_SHA"
+    if [ ! -d "$HOME/neovim" ]; then
+        git clone --filter=blob:none --no-checkout "$NVIM_REPO" "$HOME/neovim"
+    fi
+    git -C "$HOME/neovim" fetch --depth 1 origin "$NVIM_SHA"
+    git -C "$HOME/neovim" checkout --detach FETCH_HEAD
+else
+    echo "Neovim version: nightly tag (API lookup failed)"
+    if [ ! -d "$HOME/neovim" ]; then
+        git clone --depth 1 --branch nightly "$NVIM_REPO" "$HOME/neovim"
+    else
+        git -C "$HOME/neovim" fetch --depth 1 origin tag nightly --force
+        git -C "$HOME/neovim" checkout --detach FETCH_HEAD
+    fi
+fi
+echo "Checked out $(git -C "$HOME/neovim" rev-parse --short HEAD)"
 
 # Build and install Neovim
 echo "Building Neovim..."
