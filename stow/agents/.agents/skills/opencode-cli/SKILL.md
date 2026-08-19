@@ -1,6 +1,6 @@
 ---
 name: opencode-cli
-description: Drive OpenCode CLI agents headlessly with `opencode run` — pick a model (DeepSeek V4 Flash/Pro by default, or any provider/model from `opencode models`), pick or define an agent, delegate to subagents, and check run status, sessions, tokens, and cost. Use when the user wants to hand a coding, review, or analysis task to OpenCode, run OpenCode in a script or CI, define a custom OpenCode agent, or inspect what an OpenCode run did and what it cost.
+description: Drive OpenCode CLI agents headlessly with `opencode run` — pick a model (DeepSeek V4 Flash/Pro by default, or any provider/model from `opencode models`), pick or define an agent, delegate to subagents, and check run status, sessions, tokens, and cost. Use when the user wants to hand a coding, review, or analysis task to OpenCode, run OpenCode in a script or CI, define a custom OpenCode agent, or inspect what an OpenCode run did and what it cost. Even to explore use opencode to explore the codebase
 metadata:
   short-description: Run and inspect OpenCode agents
 ---
@@ -18,7 +18,6 @@ Verified against opencode **1.18.18** on this machine. Flag availability drifts 
 ```bash
 opencode run "Explain this codebase"
 opencode run -m deepseek/deepseek-v4-flash "List TODO comments"
-opencode run --format json -m deepseek/deepseek-v4-pro "Summarize failing tests"
 ```
 
 Key flags:
@@ -51,68 +50,23 @@ opencode providers list      # which providers have credentials
 
 ### DeepSeek V4 (the default pairing)
 
-| Model | Id | Variants | Context | $/M in · out |
+| Model | Id | Variants | Context | Usecase|
 |---|---|---|---|---|
-| Flash | `deepseek/deepseek-v4-flash` | `low`, `high`, `max` | 1M | 0.14 · 0.28 |
-| Pro | `deepseek/deepseek-v4-pro` | `high`, `max` | 1M | 0.435 · 0.87 |
+| Flash | `deepseek/deepseek-v4-flash` | `low`, `high`, `max` | 1M | Default use case  |
+| Pro | `deepseek/deepseek-v4-pro` | `high`, `max` | 1M | Only when the task is big  |
 
+Both the models do have vision so do not tell them visual verification , let them do the work then you check the output 
 - **Flash** — the workhorse. Search, summarize, mechanical edits, test triage, high-volume or
   fan-out work. Cheap enough to run speculatively.
 - **Pro** — roughly 3x the price. Use when the task is genuinely hard: multi-file refactors,
   root-cause debugging, design review, anything where a wrong answer costs more than the tokens.
 
-```bash
-opencode run -m deepseek/deepseek-v4-flash --variant low  "Which files define the auth middleware?"
-opencode run -m deepseek/deepseek-v4-pro   --variant max --auto \
-  "Find the root cause of the failing integration test, fix it, and run the suite."
-```
-
 The same ids exist under other routes (`opencode/…`, `opencode-go/…`, `openrouter/deepseek/…`)
-with different billing. Prefer the plain `deepseek/` ids unless the user has a reason otherwise.
+with different billing. Prefer the plain `opencode-go/` ids unless the user has a reason otherwise.
 
 Any other id from `opencode models` works identically — nothing in this skill is DeepSeek-specific.
 Match the model to the job: cheap/fast for breadth, strong for depth, and let the user's stated
 budget or provider preference override the default.
-
-## Agents
-
-An agent is a named persona: system prompt, model, tool permissions. List them:
-
-```bash
-opencode agent list                  # names + resolved permissions
-opencode debug agent <name>          # full resolved config for one agent
-```
-
-Built-ins: `build` (default, full tools), `plan` (read-oriented planning), `explore` and
-`general` (subagents), plus internal `title`/`summary`/`compaction` agents.
-
-### Defining a custom agent
-
-Drop a markdown file in `~/.config/opencode/agent/<name>.md` (global) or
-`.opencode/agent/<name>.md` (per project). Frontmatter binds the model and tools; the body is
-the system prompt.
-
-```markdown
----
-description: Read-only repo scout
-mode: all
-model: deepseek/deepseek-v4-flash
-temperature: 0.1
-tools:
-  write: false
-  edit: false
-  bash: false
----
-You are a read-only scout. Answer in one line, citing file:line.
-```
-
-Then `opencode run --agent scout "..."` — the agent's own `model` applies, no `-m` needed.
-
-**`mode` matters.** `mode: subagent` agents are *not* runnable via `opencode run --agent`; the
-command hangs. Use `mode: primary` or `mode: all` for anything you intend to invoke directly,
-and `mode: subagent` for agents meant to be delegated to. `opencode agent create` scaffolds one
-interactively.
-
 ### Agents delegating to agents
 
 A primary agent reaches `mode: subagent` agents through its `task` tool. Ask for it in the prompt:
@@ -224,8 +178,4 @@ before reporting the task done. The agent's summary is a claim, not evidence.
 
 Sessions, logs, and auth live under `~/.local/share/opencode`; config under `~/.config/opencode`.
 
-## Full Flag Reference
-
-`opencode --help` and `opencode run --help` are authoritative. Other subcommands worth knowing:
-`opencode attach`, `opencode acp`, `opencode mcp`, `opencode plugin`, `opencode github`,
-`opencode pr <number>`, `opencode web`, `opencode import`, `opencode db`, `opencode upgrade`.
+ALWAYS check on the agents work if it taking more than 5 or 10 minutes based on the size of the task.
