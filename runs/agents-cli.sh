@@ -10,8 +10,15 @@ source "$PROJECT_ROOT/lib/distro-utils.sh"
 # Initialize distro detection
 init_distro
 
-# AI coding agent CLIs, all resolved through the mise registry
-AGENT_CLIS=(claude codex opencode pi)
+# AI coding agent CLIs, as "command:mise-package" pairs.
+# The package differs from the command where the registry has no short alias.
+AGENT_CLIS=(
+    "claude:claude"
+    "codex:codex"
+    "opencode:opencode"
+    "pi:pi"
+    "grok:npm:@xai-official/grok"
+)
 
 BIN_DIR="$HOME/.local/bin"
 
@@ -41,22 +48,26 @@ fi
 mise --version
 
 # --- Install each agent CLI globally ---
-for cli in "${AGENT_CLIS[@]}"; do
-    echo "Installing $cli..."
+for entry in "${AGENT_CLIS[@]}"; do
+    cli="${entry%%:*}"
+    pkg="${entry#*:}"
+    echo "Installing $cli ($pkg)..."
     # Agent CLIs ship fixes daily, so the release-age hold does not apply here
-    MISE_MINIMUM_RELEASE_AGE=0 mise use -g "$cli@latest"
+    MISE_MINIMUM_RELEASE_AGE=0 mise use -g "$pkg"
 done
 
 # --- Wrapper shims that update the CLI to latest on every launch ---
 mkdir -p "$BIN_DIR"
 
-for cli in "${AGENT_CLIS[@]}"; do
+for entry in "${AGENT_CLIS[@]}"; do
+    cli="${entry%%:*}"
+    pkg="${entry#*:}"
     shim="$BIN_DIR/$cli"
     cat > "$shim" <<EOF
 #!/bin/bash
 export MISE_MINIMUM_RELEASE_AGE=0
-mise use -g "$cli" || exit 1
-exec mise x "$cli" -- "$cli" "\$@"
+mise use -g "$pkg" || exit 1
+exec mise x "$pkg" -- "$cli" "\$@"
 EOF
     chmod +x "$shim"
     echo "Shim written: $shim"
@@ -64,7 +75,8 @@ done
 
 # --- Verify ---
 echo "Agent CLI installation complete!"
-for cli in "${AGENT_CLIS[@]}"; do
+for entry in "${AGENT_CLIS[@]}"; do
+    cli="${entry%%:*}"
     if command_exists "$cli"; then
         printf '%-10s %s\n' "$cli" "$("$cli" --version 2>/dev/null | head -1)"
     else
