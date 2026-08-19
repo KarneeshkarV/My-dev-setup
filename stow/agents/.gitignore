@@ -1,0 +1,4 @@
+# codex regenerates its system skills on every launch
+.agents/skills/.system/
+# tool-installed dependencies inside skills
+**/node_modules/

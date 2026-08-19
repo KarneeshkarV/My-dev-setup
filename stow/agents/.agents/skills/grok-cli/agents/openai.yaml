@@ -1,0 +1,7 @@
+interface:
+  display_name: "Grok CLI"
+  short_description: "Run and automate Grok Build CLI workflows"
+  default_prompt: "Use $grok-cli to run a headless Grok CLI analysis with the right model, output format, and permissions."
+
+policy:
+  allow_implicit_invocation: true

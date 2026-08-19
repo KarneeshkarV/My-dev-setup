@@ -1,0 +1,22 @@
+{
+  "lastChangelogVersion": "0.84.2",
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-5.6-terra",
+  "packages": [
+    "npm:pi-cursor-sdk",
+    "git:github.com/algal/pi-openai-server-compaction"
+  ],
+  "defaultThinkingLevel": "medium",
+  "theme": "github-dark-default",
+  "extensions": [
+    "/home/karneeshkar/.pi/agent/davis7-my-pi-setup/extensions/ask-user",
+    "/home/karneeshkar/.pi/agent/davis7-my-pi-setup/extensions/background-terminals",
+    "/home/karneeshkar/.pi/agent/davis7-my-pi-setup/extensions/model-info",
+    "/home/karneeshkar/.pi/agent/davis7-my-pi-setup/extensions/subagents",
+    "/home/karneeshkar/.pi/agent/davis7-my-pi-setup/extensions/ui-customization",
+    "/home/karneeshkar/.pi/agent/davis7-my-pi-setup/extensions/workflows"
+  ],
+  "themes": [
+    "/home/karneeshkar/.pi/agent/davis7-my-pi-setup/themes"
+  ]
+}
