@@ -3,17 +3,26 @@
 buf=$(cat)
 b64=$(printf '%s' "$buf" | base64 | tr -d '\n')
 
-# Try native clipboard if running locally with a display
+# Try native clipboard if running locally with a display.
+# Use exactly ONE mechanism: a local native write OR OSC 52 (for SSH).
+# Running both writes the same selection to the clipboard twice, which
+# shows up as a doubled paste.
+native=0
 if [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy >/dev/null 2>&1; then
     printf '%s' "$buf" | wl-copy --trim-newline 2>/dev/null &
+    native=1
 elif [ -n "$DISPLAY" ] && command -v xclip >/dev/null 2>&1; then
     printf '%s' "$buf" | xclip -in -selection clipboard 2>/dev/null &
+    native=1
 fi
 
-# OSC 52: terminal-level clipboard, travels through SSH to Ghostty
-if [ -n "$TMUX" ]; then
-    # Wrap in tmux DCS passthrough so tmux forwards it to the outer terminal
-    printf "\033Ptmux;\033\033]52;c;%s\007\033\\" "$b64"
-else
-    printf "\033]52;c;%s\007" "$b64"
+# OSC 52: terminal-level clipboard, travels through SSH to Ghostty.
+# Only used as a fallback when no local clipboard is available (e.g. SSH).
+if [ "$native" -eq 0 ]; then
+    if [ -n "$TMUX" ]; then
+        # Wrap in tmux DCS passthrough so tmux forwards it to the outer terminal
+        printf "\033Ptmux;\033\033]52;c;%s\007\033\\" "$b64"
+    else
+        printf "\033]52;c;%s\007" "$b64"
+    fi
 fi

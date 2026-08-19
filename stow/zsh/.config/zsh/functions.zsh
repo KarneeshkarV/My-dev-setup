@@ -45,22 +45,16 @@ gcq() {
 
 
 # ===== Hosts =====
-OMEN_HOST="karneeshkar@192.168.0.106"
 THINKAR_HOST="thinkar@192.168.0.115"
 THINKAR_KEY="$HOME/.ssh/thinkar_key"
 
-# ===== Omen SSH =====
-omen() {
-    if [ $# -eq 0 ]; then
-        ssh "$OMEN_HOST"
-    else
-        ssh "$OMEN_HOST" "$@"
-    fi
-}
+# ===== Omen / Cents SSH =====
+# omen() and cents() are defined in ~/.secrets (not in git) because they
+# contain private host names. ~/.zshrc sources ~/.secrets before this file.
 
 # Run tmux-s on Omen and stay in zsh
 otmux-s() {
-    ssh -t "$OMEN_HOST" "/home/karneeshkar/.local/scripts/tmux-s; exec zsh"
+    ssh -t omen "/home/karneeshkar/.local/scripts/tmux-s; exec zsh"
 }
 
 # ===== Thinkar SSH =====

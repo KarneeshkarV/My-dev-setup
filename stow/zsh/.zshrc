@@ -100,13 +100,31 @@ esac
 # opencode
 export PATH=/home/karneeshkar/.opencode/bin:$PATH
 
-# --- Pi defaults ---
-# Start pi plain by default: don't auto-load AGENTS.md/CLAUDE.md from parent folders.
-# To opt a project back into context-file loading, create .pi/load-context-files in that project.
-pi() {
-    if [[ -f .pi/load-context-files ]]; then
-        command pi "$@"
-    else
-        command pi --no-context-files "$@"
-    fi
-}
+unfunction pi 2>/dev/null
+
+# >>> juliaup initialize >>>
+
+# !! Contents within this block are managed by juliaup !!
+
+path=('/home/karneeshkar/.juliaup/bin' $path)
+export PATH
+# Tab completion for juliaup and julia channel selection
+[ -f "/home/karneeshkar/.julia/juliaup/completions/zsh.zsh" ] && source "/home/karneeshkar/.julia/juliaup/completions/zsh.zsh"
+
+# <<< juliaup initialize <<<
+
+# Pi
+export PATH="/home/karneeshkar/.local/share/mise/installs/node/25.1.0/bin:$PATH"
+
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+fpath=(~/.grok/completions/zsh $fpath)
+autoload -Uz compinit && compinit -C
+# <<< grok installer <<<
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/karneeshkar/.local/bin:$PATH"
+
+# bun completions
+[ -s "/home/karneeshkar/.bun/_bun" ] && source "/home/karneeshkar/.bun/_bun"
