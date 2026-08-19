@@ -31,3 +31,16 @@
 [credential "https://gist.github.com"]
 	helper = 
 	helper = !/home/linuxbrew/.linuxbrew/bin/gh auth git-credential
+[fetch]
+	prune = true
+[credential]
+	helper = store
+[pager]
+	diff = hunk pager
+	show = hunk pager
+[diff]
+	tool = hunk
+[difftool "hunk"]
+	cmd = hunk difftool \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+[difftool]
+	prompt = false
