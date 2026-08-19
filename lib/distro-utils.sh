@@ -15,13 +15,15 @@ detect_os() {
         OS_ID="$ID"
         OS_NAME="$NAME"
         OS_VERSION="$VERSION_ID"
+        OS_LIKE="$ID_LIKE"
     else
         echo -e "${RED}Error: Cannot detect OS. /etc/os-release not found.${NC}"
         exit 1
     fi
 
+    # Derivatives that do not name themselves fall back to ID_LIKE
     case "$OS_ID" in
-        arch|manjaro|endeavouros)
+        arch|manjaro|endeavouros|omarchy|cachyos|garuda)
             DISTRO="arch"
             PKG_MGR="pacman"
             ;;
@@ -29,6 +31,22 @@ detect_os() {
             DISTRO="debian"
             PKG_MGR="apt"
             ;;
+        *)
+            case " $OS_LIKE " in
+                *" arch "*)
+                    DISTRO="arch"
+                    PKG_MGR="pacman"
+                    ;;
+                *" debian "*|*" ubuntu "*)
+                    DISTRO="debian"
+                    PKG_MGR="apt"
+                    ;;
+            esac
+            ;;
+    esac
+
+    case "$DISTRO" in
+        arch|debian) ;;
         *)
             echo -e "${RED}Error: Unsupported distribution: $OS_ID${NC}"
             echo "Supported: Arch Linux, Ubuntu, Debian"
