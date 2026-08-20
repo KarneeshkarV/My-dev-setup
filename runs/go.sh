@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # Get the script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -54,9 +55,10 @@ fi
 sudo tar -C /usr/local -xzf "${WORKDIR}/${GO_TARBALL}"
 
 # Add Go to PATH
-LINE='export PATH=$PATH:/usr/local/go/bin'
+LINE='export PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"'
 PROFILE="$HOME/.profile"
 
+touch "$PROFILE"
 if ! grep -Fxq "$LINE" "$PROFILE"; then
     echo "$LINE" >> "$PROFILE"
     echo "Line added to $PROFILE"
@@ -65,13 +67,18 @@ else
 fi
 
 # Also add to current session
-export PATH=$PATH:/usr/local/go/bin
+export PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"
 
 # Verify installation
 go version
 
 # Install Go tools
 echo "Installing Go CLI tools..."
-go install github.com/jesseduffield/lazygit@latest
+if ! command_exists lazygit; then
+    go install github.com/jesseduffield/lazygit@latest
+else
+    echo "lazygit already installed"
+fi
 
 echo "Go installation complete!"
+lazygit --version

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # Get the script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -47,12 +48,13 @@ else
         echo "Alternatively, you can start a new zsh session by running: zsh"
         echo ""
 
-        # Ask if user wants to restart now
-        read -p "Would you like to start a new zsh session now? (y/n) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            echo "Starting zsh..."
-            exec zsh
+        if [ -t 0 ]; then
+            read -p "Would you like to start a new zsh session now? (y/n) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo "Starting zsh..."
+                exec zsh
+            fi
         fi
     else
         echo "✗ Failed to change default shell"

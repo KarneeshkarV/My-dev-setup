@@ -38,3 +38,6 @@
 	cmd = hunk difftool \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
 [difftool]
 	prompt = false
+[user]
+	email = kvelmurugan@phillipcapital.in
+	name = Karneeshkar

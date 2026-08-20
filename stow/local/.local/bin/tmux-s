@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+export PATH="$HOME/.fzf/bin:$PATH"
+exec "$HOME/.local/scripts/tmux-s" "$@"

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 echo "Installing Neovim from source..."
 
-rm -rf ~/.config/nvim/
 # Get the script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
@@ -16,6 +16,9 @@ init_distro
 # Install build dependencies
 echo "Installing build dependencies..."
 install_mapped_packages ripgrep git xclip cmake gettext lua5.1 liblua5.1-0-dev unzip wget make
+# python3-venv is required by Mason to install pip-based tools (e.g. cmakelang),
+# which run `python3 -m venv`; without it those installs fail with an ensurepip error.
+install_mapped_packages python3-venv
 
 # Latest master commit whose `test.yml` CI run succeeded. Fallback: nightly tag.
 resolve_healthy_nvim_sha() {
@@ -75,13 +78,14 @@ echo "Checked out $(git -C "$HOME/neovim" rev-parse --short HEAD)"
 
 # Build and install Neovim
 echo "Building Neovim..."
-make -C ~/neovim clean
-make -C ~/neovim CMAKE_BUILD_TYPE=RelWithDebInfo
-sudo make -C ~/neovim install
+make -C "$HOME/neovim" clean
+make -C "$HOME/neovim" CMAKE_BUILD_TYPE=RelWithDebInfo
+sudo make -C "$HOME/neovim" install
 
 # Install Neovim config if not already present
 if [ ! -d "${XDG_CONFIG_HOME:-$HOME/.config}/nvim" ]; then
     echo "Installing Neovim configuration..."
+    mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}"
     git clone https://github.com/watninja68/karnee_neovim_config.git "${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
 else
     echo "Neovim config already exists"

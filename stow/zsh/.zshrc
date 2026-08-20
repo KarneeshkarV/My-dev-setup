@@ -1,6 +1,12 @@
 # ============================================================================
+#
 #                              ZSHRC Configuration
 # ============================================================================
+
+if [ -z "$ZSH_VERSION" ]; then
+    echo "This file is for zsh. Start zsh with: exec zsh"
+    return 0 2>/dev/null || exit 0
+fi
 
 # --- Zsh Options ---
 setopt AUTO_CD                # cd by typing directory name
@@ -45,6 +51,14 @@ export BUN_INSTALL="$HOME/.bun"
 export PNPM_HOME="$HOME/.local/share/pnpm"
 export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 
+# LiteLLM gateway
+export LITELLM_BASE_URL="${LITELLM_BASE_URL:-http://35.238.33.238:4000}"
+export LITELLM_API_KEY="${LITELLM_API_KEY:-}"
+
+# Docling proxy (dockling-proxy on big-coding-cpu, same VM as LiteLLM). Fronts
+# the Docling pod so this URL survives the pod being replaced.
+export DOCLING_BASE_URL="${DOCLING_BASE_URL:-http://35.238.33.238:8081}"
+
 # Performance/compatibility fixes
 ulimit -n 4096
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
@@ -57,9 +71,12 @@ typeset -U path  # Ensure unique entries only
 path=(
     "$HOME/.local/bin"
     "$HOME/.local/scripts"
+    "$HOME/.fzf/bin"
+    "$HOME/.cargo/bin"
     "$HOME/go/bin"
     "$BUN_INSTALL/bin"
     "$PNPM_HOME"
+    "$HOME/.npm-global/bin"
     "$JAVA_HOME/bin"
     "$ANDROID_SDK_ROOT/emulator"
     "$ANDROID_SDK_ROOT/platform-tools"
@@ -67,7 +84,73 @@ path=(
     $path
 )
 export PATH
+erniequeue() {
+ local pod ip port
+ pod=$(runpodctl pod list 2>/dev/null | \
+    jq -r 'first(.[] | select((.name + " " + (.imageName // "")) |
+           test("ernie"; "i")) | .id) // empty')
+ [[ -n "$pod" ]] || { print -u2 -- 'no ernie pod running'; return 1; }
+ eval "$(runpodctl ssh info "$pod" -o json 2>/dev/null | \
+    jq -r '"ip=\(.ip) port=\(.port)"')"
+ [[ -n "$ip" && -n "$port" ]] || { print -u2 -- "no ssh endpoint for $pod"; return 1; }
+ ssh -i "$HOME/.runpod/ssh/runpodctl-ssh-key" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR -o ConnectTimeout=10 "root@$ip" -p "$port" <<'REMOTE_CMD'
+L=/workspace/image/sglang-ernie.log
+q=$(ss -tn state established 2>/dev/null | grep -c ":30000")
+echo "queue      : $q waiting  (~$((q * 100))s for a new request)"
+echo "completed  : $(grep -c "Pixel data generated successfully" $L)"
+echo "denoise    : $(grep -o "\[DenoisingStage\] finished in [0-9.]*" $L | \
+                       tail -1 | grep -o "[0-9.]*$")s  (compute; ~90 is healthy)"
+echo "errors     : $(grep -icE "traceback|out of memory" $L)"
+nvidia-smi --query-gpu=memory.used,memory.total,utilization.gpu \
+           --format=csv,noheader | sed "s/^/gpu        : /"
+echo "step       : $(tail -1 $L | sed -e "s/\x1b\[[0-9;]*m//g" | \
+                       grep -o "[0-9]*/50" | tail -1)"
+REMOTE_CMD
+}
+gssh() {
+    local line
 
+    line=$(
+        gcloud compute instances list \
+            --filter="status=RUNNING" \
+            --format="table[no-heading](name,zone,machineType.basename(),networkInterfaces[0].networkIP)" |
+        column -t |
+        fzf --prompt="VM > "
+    ) || return
+
+    read -r name zone _ _ <<<"$line"
+
+    gcloud compute ssh "$name" --zone="$zone"
+}
+
+rssh() {
+    local line id info ip port key
+
+    line=$(
+        runpodctl pod list -o json |
+            jq -r '.[] | [.id, .name, "\(.gpuCount)xGPU", "\(.costPerHr)/hr"] | @tsv' |
+            column -t |
+            fzf --prompt="Pod > "
+    ) || return
+
+    read -r id _ <<<"$line"
+
+    info=$(runpodctl ssh info "$id" -o json) || return
+    ip=$(jq -r '.ip // empty' <<<"$info")
+    port=$(jq -r '.port // empty' <<<"$info")
+    key=$(jq -r '.ssh_key.path // empty' <<<"$info")
+
+    if [[ -z "$ip" || -z "$port" ]]; then
+        echo "rssh: no SSH endpoint for pod $id" >&2
+        return 1
+    fi
+
+    if [[ -n "$key" ]]; then
+        ssh -i "$key" -p "$port" "root@${ip}"
+    else
+        ssh -p "$port" "root@${ip}"
+    fi
+}
 # --- Directory Hashes (quick access with ~name) ---
 hash -d dl=~/Downloads
 hash -d docs=~/Documents
@@ -97,34 +180,25 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-# opencode
-export PATH=/home/karneeshkar/.opencode/bin:$PATH
-
-unfunction pi 2>/dev/null
-
-# >>> juliaup initialize >>>
-
-# !! Contents within this block are managed by juliaup !!
-
-path=('/home/karneeshkar/.juliaup/bin' $path)
-export PATH
-# Tab completion for juliaup and julia channel selection
-[ -f "/home/karneeshkar/.julia/juliaup/completions/zsh.zsh" ] && source "/home/karneeshkar/.julia/juliaup/completions/zsh.zsh"
-
-# <<< juliaup initialize <<<
-
-# Pi
-export PATH="/home/karneeshkar/.local/share/mise/installs/node/25.1.0/bin:$PATH"
-
 # >>> grok installer >>>
 export PATH="$HOME/.grok/bin:$PATH"
 fpath=(~/.grok/completions/zsh $fpath)
 autoload -Uz compinit && compinit -C
 # <<< grok installer <<<
 
+# opencode
+export PATH=/home/karphi/.opencode/bin:$PATH
+
 
 # Added by Antigravity CLI installer
-export PATH="/home/karneeshkar/.local/bin:$PATH"
+export PATH="/home/karphi/.local/bin:$PATH"
 
-# bun completions
-[ -s "/home/karneeshkar/.bun/_bun" ] && source "/home/karneeshkar/.bun/_bun"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+
+# Go installation
+export PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"

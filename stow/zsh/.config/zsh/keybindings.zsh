@@ -1,5 +1,22 @@
 # --- Keybindings ---
 
+# Make `cd<Tab>` behave like `cd <Tab>` and immediately offer directories.
+smart-tab() {
+    if [[ "$LBUFFER" == cd ]]; then
+        LBUFFER+=' '
+    fi
+    # Call ZLE's builtin widget directly so autosuggestions cannot wrap this
+    # call and accidentally run its private completion-capture context.
+    zle .expand-or-complete
+}
+zle -N smart-tab
+bindkey '^I' smart-tab
+
+# Accept both common Backspace encodings. This keeps Backspace working through
+# Windows terminals, WSL, and tmux regardless of whether they send ^H or ^?.
+bindkey '^H' backward-delete-char
+bindkey '^?' backward-delete-char
+
 # Vi mode (optional - uncomment if preferred)
 # bindkey -v
 # export KEYTIMEOUT=1

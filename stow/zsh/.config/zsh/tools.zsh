@@ -4,13 +4,15 @@
 # --- External Tools Initialization ---
 
 # Homebrew (lazy-loaded for faster startup)
-_brew_shellenv_cache="$HOME/.cache/brew_shellenv"
-if [[ ! -f "$_brew_shellenv_cache" ]] || [[ "/home/linuxbrew/.linuxbrew/bin/brew" -nt "$_brew_shellenv_cache" ]]; then
-    mkdir -p "$(dirname "$_brew_shellenv_cache")"
-    /home/linuxbrew/.linuxbrew/bin/brew shellenv > "$_brew_shellenv_cache"
+if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  _brew_shellenv_cache="$HOME/.cache/brew_shellenv"
+  if [[ ! -f "$_brew_shellenv_cache" ]] || [[ "/home/linuxbrew/.linuxbrew/bin/brew" -nt "$_brew_shellenv_cache" ]]; then
+      mkdir -p "$(dirname "$_brew_shellenv_cache")"
+      /home/linuxbrew/.linuxbrew/bin/brew shellenv > "$_brew_shellenv_cache"
+  fi
+  source "$_brew_shellenv_cache"
+  unset _brew_shellenv_cache
 fi
-source "$_brew_shellenv_cache"
-unset _brew_shellenv_cache
 
 # Starship prompt
 eval "$(starship init zsh)"

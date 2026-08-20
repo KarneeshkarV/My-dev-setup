@@ -1,12 +1,12 @@
 # --- Aliases ---
 
 # File navigation & listing
-alias ls="eza --icons --group-directories-first"
-alias ll="eza --icons --group-directories-first -la"
-alias la="eza --icons --group-directories-first -a"
-alias lt="eza --icons --tree --level=2"
-alias lta="eza --icons --tree --level=2 -a"
-alias l="eza --icons -1"
+alias ls="exa --icons --group-directories-first"
+alias ll="exa --icons --group-directories-first -la"
+alias la="exa --icons --group-directories-first -a"
+alias lt="exa --icons --tree --level=2"
+alias lta="exa --icons --tree --level=2 -a"
+alias l="exa --icons -1"
 alias bat="batcat"
 
 # Directory navigation
@@ -38,6 +38,7 @@ alias v="nvim"
 alias python="python3"
 alias py="python3"
 alias sound="pavucontrol &"
+alias fsatfetech="fastfetch"
 
 # Goose disambiguation
 alias goose-ai='/home/karneeshkar/.local/bin/goose'

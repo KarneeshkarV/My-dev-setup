@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+set -o pipefail
 
 # Get the directory where the script is located
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 # Initialize variables
 filter=""
@@ -57,21 +58,56 @@ log "Script directory: $script_dir"
 log "Filter: '$filter'" # Added quotes around filter value for clarity
 log "Dry run enabled: $dry" # Show status of dry run
 
-log "Searching for executable scripts in ./runs ..."
-# Find executable files within the ./runs directory relative to the script's location.
-# Hide stderr from find (e.g., if ./runs directory doesn't exist)
-scripts_list=$(find "$script_dir/runs" -maxdepth 1 -mindepth 1 -executable -type f 2>/dev/null)
+log "Searching for executable installer scripts in ./runs ..."
+
+preferred_order=(
+    aafirst.sh
+    stow.sh
+    zsh.sh
+    python.sh
+    node.sh
+    rust.sh
+    go.sh
+    cli.sh
+    tmux.sh
+    neovim.sh
+    docker.sh
+    btop.sh
+    backup.sh
+)
+
+scripts_list=()
+for script_name in "${preferred_order[@]}"; do
+    script_path="$script_dir/runs/$script_name"
+    if [[ -f "$script_path" && -x "$script_path" ]]; then
+        scripts_list+=("$script_path")
+    fi
+done
+
+while IFS= read -r script_path; do
+    already_listed=0
+    for listed_path in "${scripts_list[@]}"; do
+        if [[ "$listed_path" == "$script_path" ]]; then
+            already_listed=1
+            break
+        fi
+    done
+    if [[ "$already_listed" == "0" ]]; then
+        scripts_list+=("$script_path")
+    fi
+done < <(find "$script_dir/runs" -maxdepth 1 -mindepth 1 -executable -type f -name '*.sh' 2>/dev/null | sort)
 
 # Check if any scripts were found
-if [[ -z "$scripts_list" ]]; then # Use [[ ]] for consistency and safety
+if [[ "${#scripts_list[@]}" -eq 0 ]]; then # Use [[ ]] for consistency and safety
     log "No executable scripts found in $script_dir/runs"
     exit 0 # Exit cleanly if no scripts found
 fi
 
-log "Found scripts:$scripts_list" # Log the list of scripts found
+log "Found scripts:"
+printf '  %s\n' "${scripts_list[@]}"
 
 # Iterate through the list of found script paths
-for script_path in $scripts_list; do
+for script_path in "${scripts_list[@]}"; do
     # Filtering logic:
     # If a filter IS provided AND the script path does NOT contain the filter string...
     # (-q makes grep quiet, -v inverts the match)
@@ -88,12 +124,10 @@ for script_path in $scripts_list; do
     execute_status=$? # Capture the exit status from the execute function
     log "--- Finished $script_path (Exit Status: $execute_status) ---"
 
-    # Optional: uncomment the block below to make the main script exit
-    # immediately if any sub-script fails during a real (non-dry) run.
-    # if [[ "$dry" == "0" && $execute_status -ne 0 ]]; then
-    #     log "Error: Script $script_path failed with status $execute_status. Aborting."
-    #     exit $execute_status
-    # fi
+    if [[ "$dry" == "0" && $execute_status -ne 0 ]]; then
+        log "Error: Script $script_path failed with status $execute_status. Aborting."
+        exit $execute_status
+    fi
 done
 
 log "All matching scripts processed." # Completed the final message

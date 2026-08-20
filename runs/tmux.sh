@@ -1,38 +1,27 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
+set -euo pipefail
 
-base_dirs=(~/Desktop/projects ~/Desktop/work ~/Desktop/personal ~/Desktop/notes/)
+# Get the script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-selected=$(
-  find "${base_dirs[@]}" \
-    -mindepth 1 \
-    -maxdepth 1 \
-    -type d \
-  | fzf
-)
+# Source distro utilities
+source "$PROJECT_ROOT/lib/distro-utils.sh"
 
-# if nothing picked, bail
-if [[ -z "$selected" ]]; then
-  exit 0
-fi
+# Initialize distro detection
+init_distro
 
-# normalize session name
-selected_name=$(basename "$selected" | tr '.,: ' '____')
+echo "=== Tmux Setup ==="
 
-echo "selected: $selected"
-echo "session name: $selected_name"
-
-switch_to() {
-  if [[ -z "$TMUX" ]]; then
-    tmux attach-session -t "$selected_name"
-  else
-    tmux switch-client -t "$selected_name"
-  fi
-}
-
-if tmux has-session -t="$selected_name" 2>/dev/null; then
-  switch_to
+if ! command_exists tmux; then
+    echo "Installing tmux..."
+    install_packages tmux
 else
-  tmux new-session -ds "$selected_name" -c "$selected"
-  switch_to
-  tmux send-keys -t "$selected_name" "ready-tmux" C-m
+    echo "tmux is already installed"
 fi
+
+echo "Initializing tmux plugin submodules..."
+git -C "$PROJECT_ROOT" submodule update --init --recursive stow/tmux/.tmux/plugins/tpm stow/tmux/.tmux/plugins/tmux stow/tmux/.tmux/plugins/tmux-resurrect stow/tmux/.tmux/plugins/tmux-sensible
+
+echo "Tmux installation complete!"
+tmux -V
