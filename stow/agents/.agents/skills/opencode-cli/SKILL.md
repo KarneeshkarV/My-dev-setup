@@ -1,6 +1,6 @@
 ---
 name: opencode-cli
-description: Drive OpenCode CLI agents headlessly with `opencode run` — pick a model (DeepSeek V4 Flash/Pro by default, or any provider/model from `opencode models`), pick or define an agent, delegate to subagents, and check run status, sessions, tokens, and cost. Use when the user wants to hand a coding, review, or analysis task to OpenCode, run OpenCode in a script or CI, define a custom OpenCode agent, or inspect what an OpenCode run did and what it cost. Even to explore use opencode to explore the codebase
+description: Drive OpenCode CLI agents headlessly with `opencode run` — pick a model (DeepSeek V4 Flash/Pro by default, or any provider/model from `opencode models`), pick or define an agent, delegate to subagents, and check run status, sessions, tokens, and cost. Use when the user wants to hand a coding, review, or analysis task to OpenCode, run OpenCode in a script or CI, define a custom OpenCode agent, or inspect what an OpenCode run did and what it cost.
 metadata:
   short-description: Run and inspect OpenCode agents
 ---
@@ -8,6 +8,8 @@ metadata:
 # OpenCode CLI
 
 Use this skill to delegate work to OpenCode agents from the command line and to inspect what those runs did.
+
+The user prefers OpenCode for codebase exploration: for a broad read-only sweep of an unfamiliar codebase, run it through `opencode run` instead of reading the files directly.
 
 Verified against opencode **1.18.18** on this machine. Flag availability drifts between versions — when exactness matters, run `opencode run --help` instead of trusting this file.
 
@@ -55,7 +57,7 @@ opencode providers list      # which providers have credentials
 | Flash | `deepseek/deepseek-v4-flash` | `low`, `high`, `max` | 1M | Default use case  |
 | Pro | `deepseek/deepseek-v4-pro` | `high`, `max` | 1M | Only when the task is big  |
 
-Both the models do have vision so do not tell them visual verification , let them do the work then you check the output 
+Both models have vision. Do not ask them to verify their work visually. Let them do the work, then check the output yourself.
 - **Flash** — the workhorse. Search, summarize, mechanical edits, test triage, high-volume or
   fan-out work. Cheap enough to run speculatively.
 - **Pro** — roughly 3x the price. Use when the task is genuinely hard: multi-file refactors,

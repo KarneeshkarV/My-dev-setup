@@ -1,6 +1,6 @@
 ---
-name: "gpt-image-2-prompt-generation-modifying"
-description: "Make any prompt for gpt image 2 several times better"
+name: image_gen_skill
+description: "Restructure a raw image idea into a field-labelled prompt for gpt image 2 - object, scene, vibe, photo quality, aspect ratio, and an avoid-list - without changing the user's own wording. Adds only style recommendations that do not contradict the request, and always emits an aspect ratio between 3:1 and 1:3. Use when the user gives an image idea to generate, or an existing image prompt to restructure. It does not invent subject matter, and it does not target image models other than gpt image 2."
 ---
 
 

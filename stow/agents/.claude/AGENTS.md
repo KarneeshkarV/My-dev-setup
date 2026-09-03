@@ -2,15 +2,15 @@
 
 These rules apply to any AI coding agent operating on this machine (Claude Code, Codex, Opencode, etc.). Project-level `AGENTS.md` / `CLAUDE.md` may add to them but should not relax them.
 
-## Package manager policy (supply-chain hardening — MANDATORY)
+## Package manager policy (supply-chain hardening - MANDATORY)
 
 - ALWAYS use **pnpm** for JavaScript/TypeScript installs. Do not use npm or yarn unless a project's tooling makes pnpm impossible. Bun is a fallback only when pnpm cannot be made to work; explain the reason before switching.
 - ALWAYS install with `minimumReleaseAge` = **2 weeks (1209600 seconds / "14d")**. This blocks installing package versions younger than 14 days and is the primary defense against fresh-publish supply-chain attacks (Shai-Hulud, Mini Shai-Hulud, and similar worm campaigns that rely on malicious versions reaching victims before the registry yanks them).
 - Set it in this order of preference:
-  1. Project `.npmrc` — `minimum-release-age=20160` (minutes).
-  2. Project `package.json#pnpm.minimumReleaseAge` — `1209600` (seconds).
+  1. Project `.npmrc` - `minimum-release-age=20160` (minutes).
+  2. Project `package.json#pnpm.minimumReleaseAge` - `1209600` (seconds).
   3. User-global `~/.npmrc` as a backstop for unconfigured projects.
-- Respect existing project values. If a repo pins a value `< 14d`, flag it to the user and propose raising — do not silently overwrite.
+- Respect existing project values. If a repo pins a value `< 14d`, flag it to the user and propose raising - do not silently overwrite.
 - If a single install legitimately needs a fresher package (security fix), use a one-off `--allow-new` / `--minimum-release-age=0` on that command, name the package, and explain why. Never disable the policy globally or in committed config.
 
 ## npx is restricted
@@ -26,3 +26,5 @@ These rules apply to any AI coding agent operating on this machine (Claude Code,
 ## When this machine has been exposed
 
 If a supply-chain scanner (`npx supply-chain-attack` or similar) has flagged this machine, assume tokens that touched it (GitHub, npm, AI providers, cloud, CI/CD, deploy) are exposed and rotate them before doing further work on sensitive repos.
+
+This machine is headless and the user treats it like a remote VPS. When you start a dev server or web UI, expose it over Tailscale and give the user the URL.
