@@ -1,7 +1,7 @@
 {
-  "lastChangelogVersion": "0.84.2",
-  "defaultProvider": "openai",
-  "defaultModel": "gpt-5.6-terra",
+  "lastChangelogVersion": "0.87.1",
+  "defaultProvider": "9router-cx",
+  "defaultModel": "cx/gpt-6-sol",
   "packages": [
     "npm:pi-cursor-sdk",
     "git:github.com/algal/pi-openai-server-compaction"

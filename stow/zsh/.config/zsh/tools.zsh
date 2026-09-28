@@ -1,16 +1,5 @@
 # --- Lazy Loading (Performance Optimization) ---
 
-# NVM - lazy load for faster shell startup
-lazy_load_nvm() {
-    unset -f nvm node npm npx 2>/dev/null
-    export NVM_DIR="$HOME/.nvm"
-    [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"
-    [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"
-}
-nvm() { lazy_load_nvm && nvm "$@"; }
-node() { lazy_load_nvm && node "$@"; }
-npm() { lazy_load_nvm && npm "$@"; }
-npx() { lazy_load_nvm && npx "$@"; }
 
 # --- External Tools Initialization ---
 

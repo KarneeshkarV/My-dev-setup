@@ -6,7 +6,7 @@ curl -s localhost:8080/account-limits | jq -r '.accounts[] | "\(.email): \(.limi
 }
 cdx() {
     if [[ "$1" == "update" ]]; then
-        brew upgrade --cask codex
+        mise upgrade codex
     else
         codex --search --sandbox=danger-full-access -c sandbox_workspace_write.network_access=true
     fi
@@ -256,6 +256,12 @@ zbench() {
         time zsh -i -c exit
     done
 }
+
+# Connect Waynergy to Zen with an optional peer IP address.
+way() {
+    command waynergy -c "${1:-192.168.0.107}" -p 24800 -N zen -b wlr -E
+}
+
 gssh () {
         local line
         line=$(

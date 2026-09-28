@@ -1,4 +1,4 @@
-always talk in ASD-STE100 simplified technical english and say only what needs to be said. report only the elements needed for me to make the right decisions, explained clearly
+Always talk in ASD-STE100 simplified technical english and say only what needs to be said. report only the elements needed for me to make the right decisions, explained clearly
 Handle the task and verification yourself by default. Do not spawn subagents except for necessary independent reviews or when I explicitly ask you to.
 ## Package Managers & Environment
 - This system is Arch Linux + Omarchy. Use the omarchy skill for desktop, Hyprland, waybar, walker, terminal, or theme config work.
@@ -19,6 +19,7 @@ Handle the task and verification yourself by default. Do not spawn subagents exc
 - When you test a UI end to end, hold it to a pixel-level standard.
 - Report lint errors, test failures, and flaky tests you see, even when your change did not cause them.
   - Fix one in the same change when it blocks the task or the fix is small. Otherwise tell me and let me decide.
+- When a step doesn't need my input, keep going. Put status notes in the same message as your next action. Stop and ask only when you can't continue without me, or before anything destructive: deleting data, force-pushing.
 
 ## Scope of changes
 
