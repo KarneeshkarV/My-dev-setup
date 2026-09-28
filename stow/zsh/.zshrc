@@ -2,6 +2,11 @@
 #
 #                              ZSHRC Configuration
 # ============================================================================
+#
+#
+win_shut(){
+/mnt/c/Windows/System32/shutdown.exe /s /f /t 0
+}
 
 if [ -z "$ZSH_VERSION" ]; then
     echo "This file is for zsh. Start zsh with: exec zsh"
@@ -48,8 +53,11 @@ export ANDROID_SDK_ROOT=/opt/android-sdk
 export ANDROID_HOME=/opt/android-sdk
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export BUN_INSTALL="$HOME/.bun"
-export PNPM_HOME="$HOME/.local/share/pnpm"
-export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+if [[ -r "$HOME/.ripgreprc" ]]; then
+    export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+else
+    unset RIPGREP_CONFIG_PATH
+fi
 
 # LiteLLM gateway
 export LITELLM_BASE_URL="${LITELLM_BASE_URL:-http://35.238.33.238:4000}"
@@ -68,6 +76,9 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 # --- PATH Configuration ---
 typeset -U path  # Ensure unique entries only
+path=(${path:#$HOME/.nvm/versions/node/*/bin})
+path=(${path:#$HOME/.local/share/pnpm})
+path=(${path:#/home/karneeshkar/.local/share/pnpm})
 path=(
     "$HOME/.local/bin"
     "$HOME/.local/scripts"
@@ -75,7 +86,6 @@ path=(
     "$HOME/.cargo/bin"
     "$HOME/go/bin"
     "$BUN_INSTALL/bin"
-    "$PNPM_HOME"
     "$HOME/.npm-global/bin"
     "$JAVA_HOME/bin"
     "$ANDROID_SDK_ROOT/emulator"
@@ -172,20 +182,6 @@ for config_file in "$ZSH_CONFIG_DIR"/*.zsh(N); do
 done
 unset config_file
 
-# pnpm
-export PNPM_HOME="/home/karneeshkar/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
-
-# >>> grok installer >>>
-export PATH="$HOME/.grok/bin:$PATH"
-fpath=(~/.grok/completions/zsh $fpath)
-autoload -Uz compinit && compinit -C
-# <<< grok installer <<<
-
 # opencode
 export PATH=/home/karphi/.opencode/bin:$PATH
 
@@ -193,12 +189,20 @@ export PATH=/home/karphi/.opencode/bin:$PATH
 # Added by Antigravity CLI installer
 export PATH="/home/karphi/.local/bin:$PATH"
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
 # Generated for envman. Do not edit.
 [ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
 
 # Go installation
 export PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"
+
+# Added by the Hunk installer (https://hunk.dev)
+export PATH='/home/karphi/.hunk/bin':"$PATH"
+
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+fpath=(~/.grok/completions/zsh $fpath)
+autoload -Uz compinit && compinit -C
+# <<< grok installer <<<
+
+# mise shims avoid scanning the Windows PATH during shell startup.
+eval "$(/home/karphi/.local/bin/mise activate --shims zsh)"

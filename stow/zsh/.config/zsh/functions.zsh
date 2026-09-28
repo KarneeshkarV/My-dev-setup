@@ -1,5 +1,8 @@
 # --- Functions ---
 
+t3_serve() {
+    t3 serve --host "$(tailscale ip -4)"
+}
 # Check the LiteLLM gateway models with one prompt. Choose a target with fzf;
 # the "All models" entry sends all requests concurrently.
 _modelcheck_request() {
@@ -29,6 +32,12 @@ _modelcheck_request() {
                 '{model: $model, messages: [{role: "user", content: $prompt}], max_tokens: 512}')
             url="$url/v1/chat/completions"
             ;;
+        qwen3.8-27b)
+            model="qwen3.8-27b"
+            payload=$(jq -cn --arg model "$model" --arg prompt "$prompt" \
+                '{model: $model, messages: [{role: "user", content: $prompt}], max_tokens: 512}')
+            url="$url/v1/chat/completions"
+            ;;
         gemma-4e4b)
             model="gemma-4-e4b"
             payload=$(jq -cn --arg model "$model" --arg prompt "$prompt" \
@@ -39,6 +48,24 @@ _modelcheck_request() {
             model="ernie-image"
             payload=$(jq -cn --arg model "$model" --arg prompt "$prompt" \
                 '{model: $model, prompt: $prompt, n: 1, size: "1024x1024", response_format: "b64_json"}')
+            url="$url/v1/images/generations"
+            max_time=1200
+            ;;
+        zimage)
+            # Z-Image-Turbo on SGLang Diffusion. Unlike ERNIE it batches and
+            # renders 1024px in seconds, so it does not need ERNIE's ceiling —
+            # only enough room for a cold pipeline load.
+            model="z-image-turbo"
+            payload=$(jq -cn --arg model "$model" --arg prompt "$prompt" \
+                '{model: $model, prompt: $prompt, n: 1, size: "1024x1024", response_format: "b64_json"}')
+            url="$url/v1/images/generations"
+            max_time=300
+            ;;
+        qwen-image-2.1)
+            model="qwen-image-2.1"
+            payload=$(jq -cn --arg model "$model" --arg prompt "$prompt" \
+                '{model: $model, prompt: $prompt, n: 1, size: "1024x1024",
+                  num_inference_steps: 40, true_cfg_scale: 1.0}')
             url="$url/v1/images/generations"
             max_time=1200
             ;;
@@ -103,11 +130,11 @@ _modelcheck_request() {
         -d "$payload")
     curl_status=$?
     if (( curl_status == 0 )); then
-        if [[ "$target" == ernie-image ]]; then
+        if [[ "$target" == ernie-image || "$target" == zimage || "$target" == qwen-image-2.1 ]]; then
             # Keep the images somewhere durable rather than $TMPDIR: a check
             # worth waiting minutes for is worth being able to look at later.
             mkdir -p -- "$HOME/.cache/modelcheck" || return 1
-            image_file="$HOME/.cache/modelcheck/ernie-$(date +%Y%m%d-%H%M%S).png"
+            image_file="$HOME/.cache/modelcheck/${target}-$(date +%Y%m%d-%H%M%S).png"
             print -r -- "$response" | jq -r '.data[0].b64_json // empty' |
                 base64 --decode >| "$image_file"
             # A 200 with no b64_json still writes an empty file, so size is the
@@ -182,28 +209,34 @@ check() {
     (( $+commands[jq] )) || { print -u2 -- 'check requires jq.'; return 127; }
 
     choices=(
-        'Qwen3 8B (LiteLLM)'
         'Qwen3.6 35B (LiteLLM)'
+        'Qwen3.8 27B (LiteLLM)'
         'Gemma 4 E4B (LiteLLM)'
-        'Ernie Image (LiteLLM)'
         'Docling (dockling-proxy)'
         'Qwen3 Reranker (LiteLLM)'
         'Qwen3 TTS (LiteLLM)'
+        'Ernie Image (LiteLLM)'
+        'Zimage (LiteLLM)'
+        'Qwen Image 2.1 (LiteLLM)'
+        'Qwen3 8B (LiteLLM)'
         'All models (parallel)'
     )
     choice=$(printf '%s\n' "${choices[@]}" | fzf --prompt='Model check > ' --height=40% --reverse --border) || return
 
     case "$choice" in
-        'Qwen3 8B'*) target=qwen-8b ;;
         'Qwen3.6 35B'*) target=qwen3.6-35b ;;
+        'Qwen3.8 27B'*) target=qwen3.8-27b ;;
         'Gemma 4 E4B'*) target=gemma-4e4b ;;
-        'Ernie Image'*) target=ernie-image ;;
         'Docling'*) target=docling ;;
         'Qwen3 Reranker'*) target=reranker ;;
         'Qwen3 TTS'*) target=tts ;;
+        'Ernie Image'*) target=ernie-image ;;
+        'Zimage'*) target=zimage ;;
+        'Qwen Image 2.1'*) target=qwen-image-2.1 ;;
+        'Qwen3 8B'*) target=qwen-8b ;;
         'All models'*)
             tmpdir=$(mktemp -d) || return 1
-            targets=(qwen-8b qwen3.6-35b gemma-4e4b ernie-image docling reranker tts)
+            targets=(qwen3.6-35b qwen3.8-27b gemma-4e4b docling reranker tts ernie-image zimage qwen-image-2.1 qwen-8b)
             for target in "${targets[@]}"; do
                 _modelcheck_request "$target" "$prompt" >"$tmpdir/$target" 2>&1 &
                 pids+=("$!")

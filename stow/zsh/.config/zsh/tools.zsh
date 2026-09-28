@@ -1,6 +1,3 @@
-# --- Lazy Loading (Performance Optimization) ---
-
-
 # --- External Tools Initialization ---
 
 # Homebrew (lazy-loaded for faster startup)

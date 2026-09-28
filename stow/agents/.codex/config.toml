@@ -1,4 +1,4 @@
-model = "gpt-5.6-sol"
+model = "gpt-6-sol"
 model_reasoning_effort = "medium"
 plan_mode_reasoning_effort = "high"
 
@@ -280,18 +280,84 @@ trust_level = "trusted"
 [projects."/home/karneeshkar/Desktop/personal/screener_main/exection_trade"]
 trust_level = "trusted"
 
+[projects."/home/karphi/code/runpod_infra"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/iac_first"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/Linkedin_Names_downloader"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/resume-filter"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/Video-Generator"]
+trust_level = "trusted"
+
+[projects."/tmp/AI-Usage-Bar"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/hub-app"]
+trust_level = "trusted"
+
+[projects."/home/karphi/per/screener"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/learning-management"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/stt_sur"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/research-assistant"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/OneBacktesterToRuleThemAll"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/execution-trade"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/backOptions"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/ai-assistant"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/AI-Usage-Bar"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/openproject"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/news-filtering"]
+trust_level = "trusted"
+
+[projects."/mnt/c/Users/LPUSER/Desktop/notes/phillip_ai"]
+trust_level = "trusted"
+
+[projects."/mnt/c/users/lpuser/desktop/notes/phillip_ai"]
+trust_level = "trusted"
+
 [features]
 default_mode_request_user_input = true
 unified_exec = true
+context_management = true
 steer = true
 js_repl = true
 goals = true
 
 [tui]
 status_line = ["model-with-reasoning", "context-remaining", "current-dir", "five-hour-limit"]
+screen_reader_detection_done = true
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
 "gpt-5.6-sol" = 4
+gpt-6-astra = 4
 
 
