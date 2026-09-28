@@ -1,7 +1,6 @@
 Always talk in ASD-STE100 simplified technical english and say only what needs to be said. report only the elements needed for me to make the right decisions, explained clearly
 Handle the task and verification yourself by default. Do not spawn subagents except for necessary independent reviews or when I explicitly ask you to.
 ## Package Managers & Environment
-- This system is Arch Linux + Omarchy. Use the omarchy skill for desktop, Hyprland, waybar, walker, terminal, or theme config work.
 - Check package.json and lockfiles before assuming a package manager. Use uv for Python, not pip or venv.
 - JavaScript/TypeScript installs use pnpm. Bun is a fallback only when pnpm cannot be made to work; say why before you switch.
 
