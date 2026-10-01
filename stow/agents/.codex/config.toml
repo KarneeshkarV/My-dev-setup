@@ -1,5 +1,5 @@
-model = "gpt-6-sol"
-model_reasoning_effort = "medium"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "low"
 plan_mode_reasoning_effort = "high"
 
 service_tier = "default"
@@ -343,6 +343,9 @@ trust_level = "trusted"
 [projects."/mnt/c/users/lpuser/desktop/notes/phillip_ai"]
 trust_level = "trusted"
 
+[projects."/home/karphi/code/Linkedin_resume_downloader"]
+trust_level = "trusted"
+
 [features]
 default_mode_request_user_input = true
 unified_exec = true
@@ -359,5 +362,6 @@ screen_reader_detection_done = true
 "gpt-5.5" = 4
 "gpt-5.6-sol" = 4
 gpt-6-astra = 4
+"gpt-6.1-sol" = 4
 
 
