@@ -54,6 +54,7 @@ path=(
     "$HOME/.local/bin"
     "$HOME/.local/scripts"
     "$HOME/go/bin"
+    "/usr/local/go/bin"
     "$BUN_INSTALL/bin"
     "$PNPM_HOME"
     "$JAVA_HOME/bin"
@@ -71,7 +72,41 @@ hash -d conf=~/.config
 
 # --- Load Modular Config ---
 ZSH_CONFIG_DIR="${ZDOTDIR:-$HOME/.config/zsh}"
+
+# Add grok completion functions to fpath BEFORE compinit runs, so the single
+# compinit (in completions.zsh) picks up _grok. Adding another compinit later
+# would wipe runtime compdefs such as zoxide's `cd` completion.
+fpath=(~/.grok/completions/zsh $fpath)
+
 for config_file in "$ZSH_CONFIG_DIR"/*.zsh(N); do
     source "$config_file"
 done
 unset config_file
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Add local scripts to PATH
+export PATH="/home/centserver/My-dev-setup/stow/scripts/.local/scripts:$PATH"
+
+# Initialize Starship prompt
+eval "$(starship init zsh)"
+
+# Pi coding agent (managed runtime; follows the active Pi Node version)
+export PATH="$HOME/.local/share/pi-node/current/bin:$PATH"
+
+# opencode
+export PATH=/home/centserver/.opencode/bin:$PATH
+
+. "$HOME/.local/bin/env"
+
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+# NOTE: fpath for _grok is set earlier (before the module loop). Do NOT run
+# compinit again here: a second compinit rebuilds the completion table and
+# discards runtime compdefs, breaking zoxide's `cd` completion.
+# <<< grok installer <<<
+
+eval "$(/home/centserver/.local/bin/mise activate zsh)"
+
+# AI Usage Bar release limits command
+alias limits='/home/centserver/projects/AI-Usage-Bar/target/release/ai-usage-bar limits'
