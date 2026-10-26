@@ -27,9 +27,35 @@
       "skillFolderHash": "f90127d3a2d721eed8047c02f1f3846dfa854e02",
       "installedAt": "2026-07-09T14:59:57Z",
       "updatedAt": "2026-07-09T15:00:02Z"
+    },
+    "good-css": {
+      "source": "vojtaholik/good-css",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vojtaholik/good-css.git",
+      "skillPath": "skills/good-css/SKILL.md",
+      "skillFolderHash": "716c242ae3ef01743ab8e1851222260a05050763",
+      "installedAt": "2026-10-22T08:57:44.259Z",
+      "updatedAt": "2026-10-22T08:57:44.259Z"
     }
   },
   "dismissed": {
     "findSkillsPrompt": true
-  }
+  },
+  "lastSelectedAgents": [
+    "amp",
+    "cline",
+    "codex",
+    "cursor",
+    "droid",
+    "fx",
+    "gemini-cli",
+    "github-copilot",
+    "kilo",
+    "kimi-code-cli",
+    "opencode",
+    "pi",
+    "warp",
+    "zed",
+    "claude-code"
+  ]
 }
