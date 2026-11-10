@@ -1,9 +1,88 @@
 # --- Functions ---
+t3_serve() {
+    t3 serve --host "$(tailscale ip -4)"
+}
+
+# Start qBittorrent with downloads in ~/NAS. "qtorrent del" removes the container.
+qtorrent() {
+    local container_name="qtorrent"
+    local config_dir="$HOME/.config/qtorrent"
+    local download_dir="$HOME/NAS"
+    local webui_port=8081
+    local conf_file="$config_dir/qBittorrent/qBittorrent.conf"
+    local tailscale_ip username password started=0 i
+
+    if ! command -v docker >/dev/null 2>&1; then
+        print -u2 "Docker is not installed."
+        return 1
+    fi
+
+    if ! docker info >/dev/null 2>&1; then
+        print -u2 "Docker is not running. Start Docker and try again."
+        return 1
+    fi
+
+    # Teardown. Config and downloads stay on disk.
+    if [[ "$1" == (del|rm|delete|remove|stop) ]]; then
+        if docker rm -f "$container_name" >/dev/null 2>&1; then
+            print "Removed container '$container_name'. Config and downloads kept."
+        else
+            print -u2 "No container named '$container_name'."
+            return 1
+        fi
+        return 0
+    fi
+
+    mkdir -p "$config_dir" "$download_dir" || return 1
+
+    if ! docker inspect -f '{{.State.Running}}' "$container_name" 2>/dev/null | grep -qx true; then
+        docker rm -f "$container_name" >/dev/null 2>&1 || true
+        docker run -d \
+            --name "$container_name" \
+            --restart unless-stopped \
+            -e PUID="$(id -u)" \
+            -e PGID="$(id -g)" \
+            -e TZ="${TZ:-Asia/Kolkata}" \
+            -e WEBUI_PORT="$webui_port" \
+            -p "${webui_port}:${webui_port}" \
+            -p 6881:6881 \
+            -p 6881:6881/udp \
+            -v "$config_dir:/config" \
+            -v "$download_dir:/downloads" \
+            lscr.io/linuxserver/qbittorrent:latest || return 1
+        started=1
+    fi
+
+    username="$(grep -a '^WebUI.Username=' "$conf_file" 2>/dev/null | tail -n 1 | cut -d= -f2-)"
+    [[ -z "$username" ]] && username="admin"
+
+    # qBittorrent prints a per-session temporary password in the log, but only
+    # while no permanent password is set in the config.
+    for i in {1..30}; do
+        password="$(docker logs "$container_name" 2>&1 |
+            sed -n 's/.*temporary password is provided for this session: //p' | tail -n 1)"
+        [[ -n "$password" ]] && break
+        if grep -qa '^WebUI.Password_PBKDF2=' "$conf_file" 2>/dev/null; then
+            password="(the one you set in the WebUI)"
+            break
+        fi
+        (( started )) || break
+        sleep 1
+    done
+    [[ -z "$password" ]] && password="(unknown - run: docker logs $container_name)"
+
+    tailscale_ip="$(tailscale ip -4 2>/dev/null | head -n 1)"
+    print "qBittorrent is running. Downloads: $download_dir"
+    if [[ -n "$tailscale_ip" ]]; then
+        print "Open: http://${tailscale_ip}:${webui_port}"
+    else
+        print "Open: http://localhost:${webui_port}"
+    fi
+    print "Username: $username"
+    print "Password: $password"
+}
 
 # Codex wrapper
-check_limits(){
-curl -s localhost:8080/account-limits | jq -r '.accounts[] | "\(.email): \(.limits | to_entries | map(select(.value.remaining != "100%" and .value.remaining != "N/A")) | length) models have limits below 100%"'
-}
 cdx() {
     if [[ "$1" == "update" ]]; then
         mise upgrade codex
