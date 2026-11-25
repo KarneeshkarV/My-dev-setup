@@ -128,3 +128,6 @@ export PATH="/home/karneeshkar/.local/bin:$PATH"
 
 # bun completions
 [ -s "/home/karneeshkar/.bun/_bun" ] && source "/home/karneeshkar/.bun/_bun"
+
+export T3CODE_TELEMETRY_ENABLED=false
+export T3CODE_OTEL_SDK_DISABLED=true

@@ -1,7 +1,7 @@
 {
-  "lastChangelogVersion": "0.87.1",
+  "lastChangelogVersion": "1.5.0",
   "defaultProvider": "9router-cx",
-  "defaultModel": "cx/gpt-6-sol",
+  "defaultModel": "cx/gpt-6.2-sol",
   "packages": [
     "npm:pi-cursor-sdk",
     "git:github.com/algal/pi-openai-server-compaction"
@@ -18,5 +18,9 @@
   ],
   "themes": [
     "/home/karneeshkar/.pi/agent/davis7-my-pi-setup/themes"
-  ]
+  ],
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-cursor-sdk\",\"scope\":\"user\"}": "0.3.6",
+    "{\"source\":\"git:github.com/algal/pi-openai-server-compaction\",\"scope\":\"user\"}": "0.1.0"
+  }
 }

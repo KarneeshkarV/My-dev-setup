@@ -36,3 +36,4 @@ Handle the task and verification yourself by default. Do not spawn subagents exc
 - If a supply-chain scanner has flagged this machine, assume every token that touched it (GitHub, npm, AI providers, cloud, CI/CD, deploy) is exposed. Rotate before further work on sensitive repos.
 
 
+Be thorough in your analysis and bold in your recommendations
