@@ -1,5 +1,5 @@
 model = "gpt-6.1-sol"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "low"
 plan_mode_reasoning_effort = "high"
 
 service_tier = "default"
@@ -344,6 +344,12 @@ trust_level = "trusted"
 trust_level = "trusted"
 
 [projects."/home/karphi/code/Linkedin_resume_downloader"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/candlewise"]
+trust_level = "trusted"
+
+[projects."/home/karphi/code/P9_Prod"]
 trust_level = "trusted"
 
 [features]

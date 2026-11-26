@@ -207,3 +207,6 @@ autoload -Uz compinit && compinit -C
 # mise shims avoid scanning the Windows PATH during shell startup.
 eval "$(/home/karphi/.local/bin/mise activate --shims zsh)"
 export TERM=xterm-256color
+
+export T3CODE_TELEMETRY_ENABLED=false
+export T3CODE_OTEL_SDK_DISABLED=true
