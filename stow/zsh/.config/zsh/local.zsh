@@ -11,7 +11,6 @@ path=(
     "$HOME/Softwares"
     "$JAVA_HOME/bin"
     "$CUDA_HOME/bin"
-    /usr/local/go/bin
     $path
 )
 export PATH

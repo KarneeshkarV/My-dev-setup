@@ -1,0 +1,5 @@
+interface:
+  display_name: "Explain"
+  short_description: "Explain"
+policy:
+  allow_implicit_invocation: false
